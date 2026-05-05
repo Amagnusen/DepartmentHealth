@@ -50,6 +50,7 @@
     100% { box-shadow: 0 0 0 0 rgba(22,121,77,0); }
   }
 
+  /* Station tab strip */
   .tabs {
     display: flex; gap: 0; flex-wrap: wrap;
     background: var(--card);
@@ -132,6 +133,7 @@
   }
   table.hourly tbody tr.expanded td.hour-cell .chev { transform: rotate(90deg); }
 
+  /* Quarter-hour sub-rows */
   table.hourly tbody tr.qrow { background: #FBFCFD; }
   table.hourly tbody tr.qrow td {
     padding: 10px 12px; font-size: 16px;
@@ -159,19 +161,46 @@
   table.hourly tbody td.actual-cell.over { color: #16794d; }
   table.hourly tbody td.actual-cell.under { color: #b03b1b; }
   table.hourly tbody td.target-cell { color: var(--muted); font-weight: 600; font-size: 22px; }
-  table.hourly tbody td.pct-cell { padding: 10px 18px; text-align: left; }
+  table.hourly tbody td.pct-cell { padding: 10px 18px; text-align: left; position: relative; }
+
+  /* Miss-reason affordance inside the % cell */
+  .miss-action {
+    margin-top: 6px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer; user-select: none;
+    transition: all 0.15s;
+  }
+  .miss-action:hover { border-color: var(--killian-blue); color: var(--killian-blue); background: var(--alliance-blue); }
+  .miss-action.has-entries {
+    background: #FCE4E4; border-color: #E0A4A4; color: #8C1F1F;
+  }
+  .miss-action.has-entries:hover { background: #F8D5D5; }
+  .miss-action .ma-num { font-weight: 800; font-size: 12px; }
   table.hourly tbody tr.future td { opacity: 0.55; }
   table.hourly tbody tr.current td { background: var(--alliance-blue); }
   table.hourly tbody tr.current td.hour-cell { background: var(--dental-blue); color: #fff; }
 
+  /* % completion bar */
   .pct-bar {
-    position: relative; height: 34px;
-    background: #ECEFF3; border-radius: 4px;
-    overflow: hidden; width: 100%;
+    position: relative;
+    height: 34px;
+    background: #ECEFF3;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
   }
   .pct-bar .pct-fill {
     position: absolute; left: 0; top: 0; bottom: 0;
-    background: var(--solutions-silver); transition: width 0.3s;
+    background: var(--solutions-silver);
+    transition: width 0.3s;
   }
   .pct-bar.over .pct-fill { background: linear-gradient(90deg, #16794d, #2BA46B); }
   .pct-bar.under .pct-fill { background: linear-gradient(90deg, #B03B1B, #D55A33); }
@@ -197,8 +226,13 @@
   .cumulative-block .number { font-weight: 800; font-size: 60px; color: var(--killian-blue); line-height: 1.05; margin-top: 8px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
   .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--muted); margin-top: 6px; }
-  .cumulative-block.pct { background: var(--bg); }
-  .cumulative-block.pct .number { font-size: 54px; transition: color 0.2s; }
+  .cumulative-block.pct {
+    background: var(--bg);
+  }
+  .cumulative-block.pct .number {
+    font-size: 54px;
+    transition: color 0.2s;
+  }
   .cumulative-block.pct .number.over    { color: #16794d; }
   .cumulative-block.pct .number.partial { color: var(--lab-gold); }
   .cumulative-block.pct .number.under   { color: #b03b1b; }
@@ -224,6 +258,7 @@
 
   .loading { text-align: center; padding: 22px; color: var(--muted); font-family: 'Open Sans', sans-serif; font-size: 13px; }
 
+  /* WIP banner */
   .wip-banner {
     background: linear-gradient(90deg, var(--alliance-blue) 0%, #fff 60%);
     border: 2px solid var(--killian-blue);
@@ -247,6 +282,7 @@
   }
   .wip-banner.empty .wip-num { color: var(--solutions-silver); }
 
+  /* Lower row removed — content now lives in .right-stack */
   .section-card {
     background: var(--card); border: 2px solid var(--spectrum-blue);
     border-radius: 6px; overflow: hidden;
@@ -267,6 +303,7 @@
     padding: 3px 12px; border-radius: 999px; font-weight: 800;
   }
 
+  /* Tech leaderboard */
   .tech-list { padding: 8px 0; }
   .tech-row {
     display: grid; grid-template-columns: 36px 1fr auto;
@@ -296,6 +333,7 @@
     font-style: italic; font-size: 15px;
   }
 
+  /* Out-of-hours tag */
   .ooh-tag {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 7px 14px;
@@ -315,6 +353,7 @@
     font-weight: 800; font-size: 14px;
   }
 
+  /* OOH modal extras */
   .ooh-table {
     width: 100%; border-collapse: collapse;
     font-family: 'Open Sans', sans-serif; font-size: 13px;
@@ -326,7 +365,9 @@
     padding: 8px 12px; text-align: left;
   }
   .ooh-table thead th:last-child { text-align: right; }
-  .ooh-table tbody td { padding: 8px 12px; border-bottom: 1px solid var(--hairline); }
+  .ooh-table tbody td {
+    padding: 8px 12px; border-bottom: 1px solid var(--hairline);
+  }
   .ooh-table tbody tr:last-child td { border-bottom: none; }
   .ooh-table tbody td.hr-cell {
     font-family: 'Montserrat', sans-serif; font-weight: 700;
@@ -345,6 +386,7 @@
     color: var(--spectrum-blue);
   }
 
+  /* Hot list */
   .hot-list { padding: 0; }
   .hot-row {
     padding: 14px 18px; border-bottom: 1px solid var(--hairline);
@@ -360,15 +402,28 @@
     border-bottom: 1px solid var(--hairline);
     background: #FBFCFD;
     font-family: 'Open Sans', sans-serif;
-    font-size: 13px; color: var(--ink);
+    font-size: 13px;
+    color: var(--ink);
   }
-  .hot-detail .grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; }
+  .hot-detail .grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 6px 14px;
+  }
   .hot-detail .grid .k {
-    font-family: 'Montserrat', sans-serif; font-weight: 700;
-    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--muted); white-space: nowrap;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
   }
-  .hot-detail .grid .v { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--ink); }
+  .hot-detail .grid .v {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+  }
   .hot-detail .grid .v.bold { font-weight: 700; color: var(--spectrum-blue); }
   .hot-detail .grid .v.warn { color: #8C1F1F; font-weight: 700; }
   .hot-detail .full-note {
@@ -378,6 +433,83 @@
     color: var(--ink); line-height: 1.5; border-radius: 0 4px 4px 0;
   }
   .hot-row:last-child { border-bottom: none; }
+
+  /* Miss-reason modal */
+  .modal.miss-modal { width: min(560px, 92vw); }
+  .miss-stat {
+    display: flex; gap: 22px; padding: 12px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--hairline);
+    font-family: 'Open Sans', sans-serif;
+  }
+  .miss-stat .v {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800; font-size: 18px; color: var(--spectrum-blue);
+  }
+  .miss-stat .v.miss { color: #b03b1b; }
+  .miss-stat .l {
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.06em; text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+  }
+  .miss-existing { padding: 10px 18px; max-height: 180px; overflow-y: auto; }
+  .miss-existing .empty {
+    font-family: 'Lora', Georgia, serif; font-style: italic;
+    color: var(--muted); font-size: 13px; padding: 6px 0;
+  }
+  .miss-existing .row {
+    display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px;
+    align-items: center; padding: 8px 10px;
+    background: #fff; border: 1px solid var(--hairline);
+    border-radius: 4px; margin-bottom: 6px;
+  }
+  .miss-existing .row .badge-count {
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    background: var(--spectrum-blue); color: #fff;
+    padding: 2px 9px; border-radius: 999px; font-size: 12px;
+  }
+  .miss-existing .row .reason-text {
+    font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--ink);
+  }
+  .miss-existing .row .note-text {
+    grid-column: 1 / -1;
+    font-family: 'Lora', Georgia, serif; font-size: 12px; color: var(--muted);
+    padding-top: 4px;
+  }
+  .miss-existing .row .meta {
+    font-family: 'Open Sans', sans-serif; font-size: 11px; color: var(--muted);
+  }
+  .miss-existing .row button.del {
+    background: transparent; border: none; cursor: pointer;
+    color: var(--muted); font-size: 16px; padding: 0 4px;
+  }
+  .miss-existing .row button.del:hover { color: #b03b1b; }
+
+  .miss-form { padding: 14px 18px; background: var(--bg); }
+  .miss-form .field { margin-bottom: 10px; }
+  .miss-form .field label {
+    display: block;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .miss-form select,
+  .miss-form input[type=number],
+  .miss-form textarea {
+    width: 100%; padding: 8px 10px;
+    border: 1px solid var(--hairline); border-radius: 4px;
+    font-family: 'Open Sans', sans-serif; font-size: 14px;
+    background: #fff;
+  }
+  .miss-form select:focus,
+  .miss-form input[type=number]:focus,
+  .miss-form textarea:focus {
+    outline: none; border-color: var(--killian-blue);
+    box-shadow: 0 0 0 2px var(--alliance-blue);
+  }
+  .miss-form .row2 { display: grid; grid-template-columns: 1fr 90px; gap: 10px; }
+  .miss-form textarea { min-height: 60px; resize: vertical; }
+  .miss-form select optgroup { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--spectrum-blue); }
   .hot-case {
     font-family: 'Montserrat', sans-serif; font-weight: 800;
     color: var(--spectrum-blue); font-size: 16px;
@@ -400,6 +532,11 @@
     color: var(--muted); white-space: nowrap; font-weight: 600;
   }
   .hot-due.overdue { color: #8C1F1F; font-weight: 800; }
+  .hot-note {
+    grid-column: 1 / -1; padding-top: 6px;
+    font-family: 'Lora', Georgia, serif; font-size: 14px;
+    color: var(--ink); line-height: 1.45;
+  }
 </style>
 </head>
 <body>
@@ -532,6 +669,34 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="miss-overlay">
+  <div class="modal miss-modal">
+    <div class="modal-head" id="miss-title">Miss Reasons</div>
+    <div class="miss-stat" id="miss-stat"></div>
+    <div class="miss-existing" id="miss-existing"></div>
+    <div class="miss-form">
+      <div class="field">
+        <label>Reason</label>
+        <select id="miss-reason"></select>
+      </div>
+      <div class="field row2">
+        <div>
+          <label>Notes (optional)</label>
+          <textarea id="miss-notes" placeholder="Free-text detail"></textarea>
+        </div>
+        <div>
+          <label>Cases</label>
+          <input type="number" id="miss-count" min="1" value="1" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="miss-close">Close</button>
+      <button class="btn primary" id="miss-add">Log Reason</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
     <div class="modal-head" id="modal-title">Add Item</div>
@@ -551,11 +716,12 @@
   const SUPABASE_URL = 'https://asdunkqodixbhbohxtuq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_egid5scBHSz-8we3LiurOw_SpmvJD9u';
   const BUSINESS_UNIT = 'AOX';
-  const TZ = 'America/Los_Angeles';
+  const TZ = 'America/Los_Angeles';   // Pacific (PST/PDT)
   const SHIFT_START = 6;
-  const SHIFT_END = 20;
+  const SHIFT_END = 20;   // 6am – 8pm window (14 hourly rows)
   const REFRESH_MS = 60000;
 
+  // ---------- Helpers ----------
   const fmtHour = (h) => {
     const ampm = h >= 12 ? 'pm' : 'am';
     return (((h + 11) % 12) + 1) + ampm;
@@ -602,18 +768,31 @@
     return res.json();
   }
 
+  // ---------- State ----------
   const state = {
-    stations: [], station: null, target: 0, hourly: {},
+    stations: [],
+    station: null,
+    target: 0,
+    hourly: {},
     log: { near_misses: [], ideas: [] },
     countMethod: 'distinct_pan',
-    wip: 0, hotList: [], techs: [],
+    wip: 0,
+    hotList: [],
+    techs: [],
     ooh: { total: 0, rows: [] },
-    quarter: {}, expanded: new Set(), expandedHot: new Set(),
+    quarter: {},          // { "8-0": 2, "8-15": 1, ... }
+    expanded: new Set(),  // hours expanded into quarter view
+    expandedHot: new Set(),  // hot list case_numbers expanded
+    missLog: [],          // today's miss-log rows
+    missReasons: { common: [], station: [] }, // dropdown options
+    missReasonsForStation: null, // cache key (station name) for the loaded list
   };
 
+  // Persist last-selected station
   function saveStation(s) { try { localStorage.setItem('sk_station', s); } catch(e){} }
   function loadStation()  { try { return localStorage.getItem('sk_station'); } catch(e){ return null; } }
 
+  // ---------- Tabs ----------
   function renderTabs() {
     const tabsEl = document.getElementById('tabs');
     tabsEl.innerHTML = '';
@@ -632,6 +811,7 @@
     });
   }
 
+  // ---------- Render ----------
   function renderHeader() {
     document.getElementById('today-label').textContent = fmtLongDate();
     document.getElementById('updated-stamp').textContent = 'Updated ' + fmtTimestamp();
@@ -673,20 +853,36 @@
       const isFuture = h > nowHour;
       const aClass = isPast ? (actual >= hourlyTarget ? 'over' : 'under') : '';
       const trClass = (isCurrent ? 'current ' : (isFuture ? 'future ' : '')) + (state.expanded.has(h) ? 'expanded' : '');
+
       const pctCell = buildPctCell(actual, hourlyTarget, isFuture);
+
+      // Miss-reason affordance for past hours (and current)
+      let missAction = '';
+      if (!isFuture) {
+        const entries = (state.missLog || []).filter(ml => ml.hour === h);
+        const entryCount = entries.length;
+        const totalCases = entries.reduce((s, e) => s + (e.miss_count || 0), 0);
+        const hasEntries = entryCount > 0;
+        const label = hasEntries
+          ? `<span class="ma-num">${entryCount}</span> reason${entryCount===1?'':'s'} · ${totalCases} cases`
+          : '+ Log miss reason';
+        missAction = `<div class="miss-action ${hasEntries?'has-entries':''}" data-miss-hour="${h}">${label}</div>`;
+      }
 
       rows.push(`
         <tr class="hour-row ${trClass}" data-hour="${h}">
           <td class="hour-cell" data-hour="${h}"><span class="chev">▶</span>${fmtHour(h)}</td>
           <td class="actual-cell ${aClass}">${actual}</td>
           <td class="target-cell">${hourlyTarget % 1 === 0 ? hourlyTarget : hourlyTarget.toFixed(1)}</td>
-          <td class="pct-cell">${pctCell}</td>
+          <td class="pct-cell">${pctCell}${missAction}</td>
         </tr>`);
 
+      // Quarter-hour expansion
       if (state.expanded.has(h)) {
         const minutes = [0, 15, 30, 45];
         for (const mn of minutes) {
           const qActual = state.quarter[h + '-' + mn] ?? 0;
+          // A quarter is "past" if its END has passed
           const quarterEndHour = mn + 15 >= 60 ? h + 1 : h;
           const quarterEndMin  = (mn + 15) % 60;
           const isQFuture =
@@ -708,12 +904,20 @@
     }
     tbody.innerHTML = rows.join('');
 
+    // Wire up click handlers on hour cells
     tbody.querySelectorAll('td.hour-cell').forEach(cell => {
       cell.addEventListener('click', () => {
         const h = parseInt(cell.dataset.hour, 10);
         if (state.expanded.has(h)) state.expanded.delete(h);
         else state.expanded.add(h);
         renderHourly();
+      });
+    });
+
+    tbody.querySelectorAll('.miss-action').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openMissModal(parseInt(el.dataset.missHour, 10));
       });
     });
 
@@ -729,6 +933,7 @@
       deltaEl.innerHTML = '&nbsp;';
     }
 
+    // Cumulative % Complete
     const pctEl = document.getElementById('cum-pct');
     const pctSub = document.getElementById('cum-pct-sub');
     pctEl.classList.remove('over', 'partial', 'under', 'future');
@@ -797,9 +1002,10 @@
       body.innerHTML = '<div class="empty-state" style="padding:32px 16px">No out-of-hours work today.</div>';
       return;
     }
+    // Split into pre-shift (<6) and post-shift (>=18)
     const pre  = rows.filter(r => r.hr <  SHIFT_START);
     const post = rows.filter(r => r.hr >= SHIFT_END);
-    const renderSection = (label, list) => {
+    const renderSection = (label, list, totalLabel) => {
       if (list.length === 0) return '';
       const total = list.reduce((s,r) => s + (r.n || 0), 0);
       const trs = list.map(r => `
@@ -845,6 +1051,15 @@
     const esc = s => String(s ?? '—').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
     const fmtDateShort = d => d ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(d)) : '—';
     const fmtDateTime = d => d ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: TZ }).format(new Date(d)) : '—';
+    const fmtSeconds = s => {
+      if (s == null) return '—';
+      const sec = parseInt(s, 10);
+      if (sec < 60) return sec + 's';
+      if (sec < 3600) return Math.round(sec / 60) + 'm';
+      const hrs = sec / 3600;
+      if (hrs < 24) return hrs.toFixed(1) + 'h';
+      return (hrs / 24).toFixed(1) + 'd';
+    };
     const now = new Date();
 
     list.innerHTML = state.hotList.map(h => {
@@ -860,6 +1075,7 @@
       const step = esc(h['Current Step']);
       const isExpanded = state.expandedHot.has(h.case_number);
 
+      // Build expanded detail
       let detail = '';
       if (isExpanded) {
         const patient = [h['Patient First Name'], h['Patient Last Name']].filter(Boolean).join(' ') || '—';
@@ -877,15 +1093,24 @@
           ['Required Out of Lab', esc(fmtDateShort(reqOut)), ''],
           ['Case Status', esc(h['Case Status']), ''],
         ];
-        if (onHold) rows.push(['On Hold', `${h['Hold Days'] || 0} days · ${esc(h['Hold Reason'])}`, 'warn']);
-        if (shipped) rows.push(['Shipped', fmtDateShort(h['Ship Date']) + ' · ' + esc(h['Carrier']) + ' · ' + esc(h['Tracking Number']), '']);
+        if (onHold) {
+          rows.push(['On Hold', `${h['Hold Days'] || 0} days · ${esc(h['Hold Reason'])}`, 'warn']);
+        }
+        if (shipped) {
+          rows.push(['Shipped', fmtDateShort(h['Ship Date']) + ' · ' + esc(h['Carrier']) + ' · ' + esc(h['Tracking Number']), '']);
+        }
         rows.push(['Hot list status', esc(h.status), '']);
         rows.push(['Added by', esc(h.added_by) + ' · ' + fmtDateTime(h.created_at), '']);
-        if (h.accepted_by) rows.push(['Accepted by', esc(h.accepted_by) + ' · ' + fmtDateTime(h.accepted_at), '']);
-        if (h['Hubspot Ticket ID']) rows.push(['Hubspot Ticket', esc(h['Hubspot Ticket ID']), '']);
+        if (h.accepted_by) {
+          rows.push(['Accepted by', esc(h.accepted_by) + ' · ' + fmtDateTime(h.accepted_at), '']);
+        }
+        if (h['Hubspot Ticket ID']) {
+          rows.push(['Hubspot Ticket', esc(h['Hubspot Ticket ID']), '']);
+        }
 
         const gridHtml = rows.map(([k, v, cls]) =>
           `<div class="k">${k}</div><div class="v ${cls}">${v}</div>`).join('');
+
         const fullNote = h.note ? `<div class="full-note">${esc(h.note)}</div>` : '';
         detail = `<div class="hot-detail"><div class="grid">${gridHtml}</div>${fullNote}</div>`;
       }
@@ -898,6 +1123,7 @@
       </div>${detail}`;
     }).join('');
 
+    // Click to expand/collapse
     list.querySelectorAll('.hot-row').forEach(row => {
       row.addEventListener('click', () => {
         const cn = row.dataset.case;
@@ -908,6 +1134,7 @@
     });
   }
 
+  // ---------- Modal ----------
   let modalField = null;
   function openModal(field) {
     modalField = field;
@@ -943,7 +1170,9 @@
         p_station: state.station, p_business_unit: BUSINESS_UNIT,
         p_field: modalField, p_text: txt, p_tz: TZ,
       });
-      if (updated) state.log = { near_misses: updated.near_misses || [], ideas: updated.ideas || [] };
+      if (updated) {
+        state.log = { near_misses: updated.near_misses || [], ideas: updated.ideas || [] };
+      }
       renderSide();
       openModal(modalField);
       clearErr();
@@ -953,6 +1182,120 @@
     }
   }
 
+  // ---------- Miss-reason modal ----------
+  let currentMissHour = null;
+  async function ensureReasonsLoaded() {
+    if (state.missReasonsForStation === state.station) return;
+    const list = await rpc('miss_reasons_get', { p_business_unit: BUSINESS_UNIT, p_station: state.station });
+    const common = (list || []).filter(r => r.scope === 'common');
+    const station = (list || []).filter(r => r.scope === 'station');
+    state.missReasons = { common, station };
+    state.missReasonsForStation = state.station;
+    const sel = document.getElementById('miss-reason');
+    sel.innerHTML = '';
+    if (common.length) {
+      const og = document.createElement('optgroup');
+      og.label = 'Common';
+      common.forEach(r => { const o = document.createElement('option'); o.value = r.reason; o.textContent = r.reason; og.appendChild(o); });
+      sel.appendChild(og);
+    }
+    if (station.length) {
+      const og = document.createElement('optgroup');
+      og.label = state.station + '-specific';
+      station.forEach(r => { const o = document.createElement('option'); o.value = r.reason; o.textContent = r.reason; og.appendChild(o); });
+      sel.appendChild(og);
+    }
+  }
+
+  function renderMissExisting() {
+    const cont = document.getElementById('miss-existing');
+    const entries = (state.missLog || []).filter(ml => ml.hour === currentMissHour);
+    if (entries.length === 0) {
+      cont.innerHTML = '<div class="empty">Nothing logged for this hour yet.</div>';
+      return;
+    }
+    const fmtTime = d => new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit', hour12: true }).format(new Date(d));
+    const esc = s => String(s ?? '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+    cont.innerHTML = entries.map(e => {
+      const note = e.notes ? `<div class="note-text">${esc(e.notes)}</div>` : '';
+      return `<div class="row">
+        <span class="badge-count">${e.miss_count}</span>
+        <span class="reason-text">${esc(e.reason)}</span>
+        <span class="meta">${fmtTime(e.created_at)}</span>
+        <button class="del" data-id="${esc(e.id)}" title="Delete">×</button>
+        ${note}
+      </div>`;
+    }).join('');
+    cont.querySelectorAll('button.del').forEach(b => {
+      b.addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+        const id = b.dataset.id;
+        try {
+          await rpc('miss_log_delete', { p_id: id });
+          state.missLog = state.missLog.filter(x => x.id !== id);
+          renderMissExisting();
+          renderHourly();
+        } catch (e) { console.error(e); showErr('Could not delete: ' + e.message); }
+      });
+    });
+  }
+
+  async function openMissModal(hour) {
+    currentMissHour = hour;
+    document.getElementById('miss-title').textContent = 'Miss Reasons · ' + fmtHour(hour);
+    const actual = state.hourly[hour] ?? 0;
+    const tgt = state.target / (SHIFT_END - SHIFT_START);
+    const miss = Math.max(0, Math.round((tgt - actual) * 10) / 10);
+    const stat = document.getElementById('miss-stat');
+    stat.innerHTML = `
+      <div><div class="l">Actual</div><div class="v">${actual}</div></div>
+      <div><div class="l">Target</div><div class="v">${tgt % 1 === 0 ? tgt : tgt.toFixed(1)}</div></div>
+      <div><div class="l">Missed</div><div class="v miss">-${miss}</div></div>
+      <div><div class="l">Station</div><div class="v">${state.station || ''}</div></div>`;
+    document.getElementById('miss-notes').value = '';
+    document.getElementById('miss-count').value = Math.max(1, Math.round(miss) || 1);
+    try { await ensureReasonsLoaded(); } catch (e) { console.error(e); }
+    renderMissExisting();
+    document.getElementById('miss-overlay').classList.add('open');
+  }
+  function closeMissModal() {
+    document.getElementById('miss-overlay').classList.remove('open');
+    currentMissHour = null;
+  }
+  async function addMiss() {
+    if (currentMissHour == null) return;
+    const reason = document.getElementById('miss-reason').value;
+    const count = parseInt(document.getElementById('miss-count').value, 10) || 1;
+    const notes = document.getElementById('miss-notes').value.trim();
+    if (!reason) return;
+    try {
+      const res = await rpc('miss_log_add', {
+        p_business_unit: BUSINESS_UNIT, p_station: state.station,
+        p_hour: currentMissHour, p_reason: reason,
+        p_miss_count: count, p_notes: notes || null,
+        p_logged_by: null, p_tz: TZ,
+      });
+      // optimistic add
+      state.missLog.push({
+        id: res.id, hour: currentMissHour, reason, miss_count: count,
+        notes: notes || null, created_at: new Date().toISOString(),
+      });
+      document.getElementById('miss-notes').value = '';
+      document.getElementById('miss-count').value = 1;
+      renderMissExisting();
+      renderHourly();
+      clearErr();
+    } catch (e) {
+      console.error(e); showErr('Could not save: ' + e.message);
+    }
+  }
+
+  document.getElementById('miss-close').addEventListener('click', closeMissModal);
+  document.getElementById('miss-add').addEventListener('click', addMiss);
+  document.getElementById('miss-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'miss-overlay') closeMissModal();
+  });
+
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('modal-add').addEventListener('click', addItem);
   document.getElementById('modal-overlay').addEventListener('click', (e) => {
@@ -961,6 +1304,7 @@
   document.getElementById('near-miss-pill').addEventListener('click', () => openModal('near_misses'));
   document.getElementById('ideas-pill').addEventListener('click', () => openModal('ideas'));
 
+  // ---------- Load ----------
   async function loadStations() {
     const list = await rpc('station_health_list', { p_business_unit: BUSINESS_UNIT });
     state.stations = (list || []).map(r => ({ station: r.station, dept: r.target_dept_name, order: r.display_order }));
@@ -972,6 +1316,7 @@
 
   async function load() {
     if (!state.station) return;
+    // Resilient: each fetch isolated so one failure doesn't blank the rest
     let mainErr = null, oohErr = null;
     const [mainRes, oohRes] = await Promise.all([
       rpc('station_health_get', { p_business_unit: BUSINESS_UNIT, p_station: state.station, p_tz: TZ })
@@ -993,6 +1338,7 @@
       state.wip = parseInt(mainRes.wip, 10) || 0;
       state.hotList = mainRes.hot_list || [];
       state.techs = mainRes.techs || [];
+      state.missLog = mainRes.miss_log || [];
     }
     if (oohRes && typeof oohRes === 'object') {
       state.ooh = { total: parseInt(oohRes.total, 10) || 0, rows: oohRes.rows || [] };
@@ -1002,6 +1348,7 @@
       console.error(mainErr);
       showErr('Live data unavailable: ' + mainErr.message);
     } else if (oohErr) {
+      // Don't blank the whole page if only OOH failed
       console.error(oohErr);
       const dot = document.getElementById('live-dot');
       dot.classList.add('stale');
