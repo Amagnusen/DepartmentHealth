@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Lora:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
 <style>
   :root {
     color-scheme: light;
@@ -29,15 +30,153 @@
     font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
     font-weight: 400;
   }
-  body { padding: 22px 28px 32px; min-height: 100vh; font-size: 15px; }
+  body { padding: 14px 18px; height: 100vh; font-size: 16px; overflow: hidden; }
 
-  .brand-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-  .brand-mark { width: 42px; height: 42px; flex-shrink: 0; }
+  /* Top bar */
+  .brand-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .brand-mark { width: 44px; height: 44px; flex-shrink: 0; }
   .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
   .brand-text .brand-name { font-weight: 800; letter-spacing: 0.06em; color: var(--spectrum-blue); font-size: 22px; }
   .brand-text .brand-sub { font-family: 'Lora', Georgia, serif; font-weight: 400; color: var(--killian-blue); font-size: 14px; margin-top: 3px; letter-spacing: 0.02em; }
+
+  /* Center title-as-station-picker in top bar */
+  .top-title-wrap {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+    position: relative;
+  }
+  .top-title {
+    background: linear-gradient(135deg, var(--spectrum-blue) 0%, #0A3550 100%);
+    color: #fff; padding: 14px 28px;
+    border-radius: 8px; cursor: pointer; user-select: none;
+    display: inline-flex; align-items: center; gap: 16px;
+    box-shadow: inset 0 -3px 0 var(--dental-blue);
+    transition: filter 0.15s;
+  }
+  .top-title:hover { filter: brightness(1.15); }
+  .top-title h1 {
+    margin: 0; font-weight: 800; font-size: 32px;
+    letter-spacing: 0.08em; text-transform: uppercase; line-height: 1;
+  }
+  .top-title .sub {
+    font-family: 'Lora', Georgia, serif; font-weight: 400;
+    font-size: 15px; color: var(--alliance-blue); letter-spacing: 0.04em;
+    margin-top: 6px; line-height: 1;
+  }
+  .top-title .title-chev {
+    color: var(--dental-blue); font-size: 22px; line-height: 1; margin-left: 6px;
+  }
+  /* Station picker popover */
+  .station-pop {
+    display: none; position: absolute; top: calc(100% + 6px);
+    left: 50%; transform: translateX(-50%);
+    background: #fff; border: 2px solid var(--spectrum-blue);
+    border-radius: 8px; box-shadow: 0 18px 48px rgba(5,32,48,0.22);
+    z-index: 50; min-width: 240px; overflow: hidden;
+  }
+  .station-pop.open { display: block; }
+  .station-pop .item {
+    padding: 12px 18px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--spectrum-blue);
+    border-bottom: 1px solid var(--hairline);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .station-pop .item:last-child { border-bottom: none; }
+  .station-pop .item:hover { background: var(--alliance-blue); }
+  .station-pop .item.active { background: var(--spectrum-blue); color: #fff; }
+  .station-pop .item .check {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px;
+    border: 2px solid var(--solutions-silver); border-radius: 3px;
+    background: #fff; color: transparent; font-weight: 800;
+    font-size: 13px; line-height: 1;
+    margin-right: 4px;
+  }
+  .station-pop .item.active .check {
+    background: var(--dental-blue); border-color: var(--dental-blue); color: var(--spectrum-blue);
+  }
+  .station-pop .pop-foot {
+    padding: 8px 14px; background: var(--bg);
+    font-family: 'Open Sans', sans-serif; font-size: 11px;
+    color: var(--muted); display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--hairline);
+  }
+  .station-pop .pop-foot a {
+    color: var(--killian-blue); cursor: pointer; font-weight: 700;
+    font-family: 'Montserrat', sans-serif; text-transform: uppercase;
+    font-size: 10px; letter-spacing: 0.06em;
+  }
+  .station-pop .pop-foot a:hover { color: var(--spectrum-blue); }
+
+  /* Comparison-mode table */
+  table.compare {
+    table-layout: fixed; width: 100%; height: 100%;
+    border-collapse: collapse; font-family: 'Open Sans', sans-serif;
+  }
+  table.compare thead .row-1 th {
+    background: var(--spectrum-blue); color: #fff;
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 10px 6px; text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  table.compare thead .row-1 th:last-child { border-right: none; }
+  table.compare thead .row-1 th.hour-h { background: #0A3550; }
+  table.compare thead .row-2 th {
+    background: var(--bg); color: var(--muted);
+    font-family: 'Open Sans', sans-serif; font-weight: 600;
+    font-size: 13px; padding: 6px 6px; text-align: center;
+    border-bottom: 1px solid var(--hairline);
+    border-right: 1px solid var(--hairline);
+  }
+  table.compare thead .row-2 th:last-child { border-right: none; }
+  table.compare tbody td {
+    padding: 6px 6px; text-align: center;
+    border-bottom: 1px solid var(--hairline);
+    border-right: 1px solid var(--hairline);
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 26px; color: var(--spectrum-blue);
+    background: #fff;
+  }
+  table.compare tbody td:last-child { border-right: none; }
+  table.compare tbody td.hour-cell {
+    background: #F4F7FA; font-size: 18px;
+  }
+  table.compare tbody td.over { color: #16794d; }
+  table.compare tbody td.under { color: #b03b1b; }
+  table.compare tbody tr.future td { opacity: 0.55; }
+  table.compare tbody tr.current td { background: var(--alliance-blue); }
+  table.compare tbody tr.current td.hour-cell { background: var(--dental-blue); color: #fff; }
+  table.compare tbody td .pct-mini {
+    display: block; font-family: 'Open Sans', sans-serif;
+    font-weight: 600; font-size: 12px; color: var(--muted); line-height: 1.2;
+    margin-top: 2px;
+  }
+  table.compare tbody td.over .pct-mini { color: #16794d; }
+  table.compare tbody td.under .pct-mini { color: #b03b1b; }
+
+  /* Compare mode: right column stays visible with aggregated data.
+     Title area shows chips per selected station instead of single name. */
+  .station-chips {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    align-items: center; justify-content: center;
+  }
+  .station-chip {
+    display: inline-block;
+    padding: 6px 14px;
+    background: rgba(74,190,238,0.18);
+    border: 1px solid var(--dental-blue);
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 18px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    line-height: 1.1;
+  }
   .top-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-  .updated { font-size: 13px; color: var(--muted); font-family: 'Open Sans', sans-serif; }
+  .updated { font-size: 15px; color: var(--muted); font-family: 'Open Sans', sans-serif; }
   .live-dot {
     display: inline-block; width: 8px; height: 8px; border-radius: 50%;
     background: #16794d; margin-right: 6px; box-shadow: 0 0 0 0 rgba(22,121,77,0.6);
@@ -50,32 +189,7 @@
     100% { box-shadow: 0 0 0 0 rgba(22,121,77,0); }
   }
 
-  /* Station tab strip */
-  .tabs {
-    display: flex; gap: 0; flex-wrap: wrap;
-    background: var(--card);
-    border: 2px solid var(--spectrum-blue);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 16px;
-  }
-  .tab {
-    flex: 1 1 auto; min-width: 120px;
-    padding: 16px 18px; cursor: pointer;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700; font-size: 15px; letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--spectrum-blue); background: transparent;
-    border-right: 1px solid var(--hairline);
-    text-align: center; transition: all 0.15s;
-    user-select: none;
-  }
-  .tab:last-child { border-right: none; }
-  .tab:hover { background: var(--alliance-blue); }
-  .tab.active {
-    background: var(--spectrum-blue); color: #fff;
-    box-shadow: inset 0 -3px 0 var(--dental-blue);
-  }
+  /* (Tab strip removed — replaced by title-as-picker) */
 
   .err-banner {
     display: none; margin-bottom: 14px; padding: 10px 14px;
@@ -99,33 +213,37 @@
   .side-stack { display: flex; flex-direction: column; gap: 16px; }
   .pill {
     background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px;
-    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
     cursor: pointer; transition: background 0.15s;
   }
   .pill:hover { background: var(--alliance-blue); }
-  .pill .label { font-weight: 700; font-size: 17px; color: var(--spectrum-blue); letter-spacing: 0.02em; }
-  .pill .count { font-weight: 800; font-size: 36px; color: var(--killian-blue); min-width: 40px; text-align: right; }
+  .pill .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
+  .pill .count { font-weight: 800; font-size: 34px; color: var(--killian-blue); min-width: 32px; text-align: right; line-height: 1; }
 
-  .board { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 16px; align-items: start; }
-  .right-stack { display: flex; flex-direction: column; gap: 16px; }
+  .board { display: grid; grid-template-columns: minmax(0,1fr) 380px; gap: 12px; align-items: stretch; height: calc(100vh - 100px); min-height: 0; }
+  .right-stack { display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
+  .panel { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+  .dual-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .panel { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; }
 
-  table.hourly { width: 100%; border-collapse: collapse; font-family: 'Open Sans', sans-serif; }
+  /* (table base styles consolidated above) */
+  table.hourly { table-layout: fixed; height: 100%; }
   table.hourly thead th {
-    background: var(--spectrum-blue); color: #fff; text-align: center; padding: 16px 12px;
-    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 16px;
+    background: var(--spectrum-blue); color: #fff; text-align: center; padding: 12px 8px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 17px;
     letter-spacing: 0.08em; text-transform: uppercase;
     border-right: 1px solid rgba(255,255,255,0.15);
   }
   table.hourly thead th:last-child { border-right: none; }
-  table.hourly thead th.hour-col   { width: 14%; }
-  table.hourly thead th.actual-col { width: 18%; }
-  table.hourly thead th.target-col { width: 18%; }
-  table.hourly thead th.pct-col    { width: 50%; }
-  table.hourly tbody td { padding: 14px 12px; text-align: center; font-size: 17px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
+  table.hourly thead th.hour-col   { width: 12%; }
+  table.hourly thead th.actual-col { width: 14%; }
+  table.hourly thead th.target-col { width: 14%; }
+  table.hourly thead th.pct-col    { width: 54%; }
+  table.hourly thead th.log-col    { width: 6%; }
+  table.hourly tbody td { padding: 8px 8px; text-align: center; font-size: 17px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
   table.hourly tbody td:last-child { border-right: none; }
   table.hourly tbody tr:last-child td { border-bottom: none; }
-  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 20px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding-left: 10px; padding-right: 10px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
+  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding: 6px 8px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
   table.hourly tbody td.hour-cell:hover { background: var(--alliance-blue); }
   table.hourly tbody td.hour-cell .chev {
     display: inline-block; margin-right: 6px; transition: transform 0.2s;
@@ -157,33 +275,31 @@
   table.hourly tbody tr.qrow td.q-pct { padding: 7px 18px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar { height: 26px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar .pct-label { font-size: 14px; }
-  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px; color: var(--spectrum-blue); }
+  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 30px; color: var(--spectrum-blue); }
   table.hourly tbody td.actual-cell.over { color: #16794d; }
   table.hourly tbody td.actual-cell.under { color: #b03b1b; }
   table.hourly tbody td.target-cell { color: var(--muted); font-weight: 600; font-size: 22px; }
-  table.hourly tbody td.pct-cell { padding: 10px 18px; text-align: left; position: relative; }
+  table.hourly tbody td.pct-cell { padding: 7px 14px; text-align: left; position: relative; }
 
-  /* Miss-reason affordance inside the % cell */
+  /* Miss-reason affordance — tiny square button in its own column */
+  table.hourly tbody td.log-cell { padding: 2px 4px; text-align: center; }
   .miss-action {
-    margin-top: 6px;
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 4px 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 28px;
     background: #fff;
     border: 1px solid var(--hairline);
-    border-radius: 999px;
+    border-radius: 4px;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 700; font-size: 11px;
-    letter-spacing: 0.06em; text-transform: uppercase;
+    font-weight: 800; font-size: 17px; line-height: 1;
     color: var(--muted);
     cursor: pointer; user-select: none;
     transition: all 0.15s;
   }
   .miss-action:hover { border-color: var(--killian-blue); color: var(--killian-blue); background: var(--alliance-blue); }
   .miss-action.has-entries {
-    background: #FCE4E4; border-color: #E0A4A4; color: #8C1F1F;
+    background: #FCE4E4; border-color: #E0A4A4; color: #8C1F1F; font-size: 15px;
   }
   .miss-action.has-entries:hover { background: #F8D5D5; }
-  .miss-action .ma-num { font-weight: 800; font-size: 12px; }
   table.hourly tbody tr.future td { opacity: 0.55; }
   table.hourly tbody tr.current td { background: var(--alliance-blue); }
   table.hourly tbody tr.current td.hour-cell { background: var(--dental-blue); color: #fff; }
@@ -191,7 +307,7 @@
   /* % completion bar */
   .pct-bar {
     position: relative;
-    height: 34px;
+    height: 30px;
     background: #ECEFF3;
     border-radius: 4px;
     overflow: hidden;
@@ -218,19 +334,20 @@
   .pct-bar.future .pct-label { color: var(--muted); }
 
   .cumulative-card { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; }
-  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 16px 10px; font-weight: 800; font-size: 18px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
-  .cumulative-card .head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--dental-blue); }
-  .cumulative-block { padding: 28px 12px; text-align: center; border-bottom: 1px solid var(--hairline); }
-  .cumulative-block:last-child { border-bottom: none; }
-  .cumulative-block .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.06em; text-transform: uppercase; }
-  .cumulative-block .number { font-weight: 800; font-size: 60px; color: var(--killian-blue); line-height: 1.05; margin-top: 8px; }
+  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 12px 10px; font-weight: 800; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
+  .cumulative-card .head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--dental-blue); }
+  .cumulative-card .body { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+  .cumulative-block { padding: 14px 6px; text-align: center; border-right: 1px solid var(--hairline); }
+  .cumulative-block:last-child { border-right: none; }
+  .cumulative-block .label { font-weight: 700; font-size: 14px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
+  .cumulative-block .number { font-weight: 800; font-size: 44px; color: var(--killian-blue); line-height: 1.05; margin-top: 4px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
-  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--muted); margin-top: 6px; }
+  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.2; }
   .cumulative-block.pct {
     background: var(--bg);
   }
   .cumulative-block.pct .number {
-    font-size: 54px;
+    font-size: 44px;
     transition: color 0.2s;
   }
   .cumulative-block.pct .number.over    { color: #16794d; }
@@ -263,22 +380,21 @@
     background: linear-gradient(90deg, var(--alliance-blue) 0%, #fff 60%);
     border: 2px solid var(--killian-blue);
     border-radius: 6px;
-    padding: 16px 22px;
-    margin-bottom: 16px;
-    display: flex; align-items: center; gap: 22px;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 18px;
   }
   .wip-banner .wip-num {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 56px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 50px;
     color: var(--killian-blue); line-height: 1;
   }
   .wip-banner .wip-label {
     font-family: 'Montserrat', sans-serif; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--spectrum-blue); font-size: 18px;
+    color: var(--spectrum-blue); font-size: 17px;
   }
   .wip-banner .wip-sub {
     font-family: 'Lora', Georgia, serif; font-style: italic;
-    color: var(--muted); font-size: 15px; margin-top: 4px;
+    color: var(--muted); font-size: 14px; margin-top: 3px; line-height: 1.2;
   }
   .wip-banner.empty .wip-num { color: var(--solutions-silver); }
 
@@ -289,9 +405,9 @@
   }
   .section-card .head {
     background: var(--spectrum-blue); color: #fff;
-    padding: 14px 18px; font-family: 'Montserrat', sans-serif;
+    padding: 12px 16px; font-family: 'Montserrat', sans-serif;
     font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-    font-size: 17px; position: relative;
+    font-size: 16px; position: relative;
     display: flex; justify-content: space-between; align-items: center;
   }
   .section-card .head::after {
@@ -299,21 +415,22 @@
     height: 3px; background: var(--dental-blue);
   }
   .section-card .head .badge {
-    font-size: 13px; background: var(--dental-blue); color: var(--spectrum-blue);
-    padding: 3px 12px; border-radius: 999px; font-weight: 800;
+    font-size: 15px; background: var(--dental-blue); color: var(--spectrum-blue);
+    padding: 3px 13px; border-radius: 999px; font-weight: 800;
   }
 
   /* Tech leaderboard */
-  .tech-list { padding: 8px 0; }
+  .section-card { display: flex; flex-direction: column; min-height: 0; }
+  .tech-list { padding: 2px 0; flex: 1; min-height: 0; overflow-y: auto; }
   .tech-row {
-    display: grid; grid-template-columns: 36px 1fr auto;
-    align-items: center; padding: 12px 18px;
+    display: grid; grid-template-columns: 32px 1fr auto;
+    align-items: center; padding: 8px 16px;
     border-bottom: 1px solid var(--hairline);
     gap: 12px;
   }
   .tech-row:last-child { border-bottom: none; }
   .tech-rank {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 18px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 17px;
     color: var(--lab-gold); text-align: center;
   }
   .tech-row.r-1 .tech-rank { color: var(--lab-gold); }
@@ -325,22 +442,108 @@
   }
   .tech-count {
     font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px;
-    color: var(--killian-blue); min-width: 36px; text-align: right;
+    color: var(--killian-blue); min-width: 30px; text-align: right;
   }
   .empty-state {
-    text-align: center; padding: 28px 16px;
+    text-align: center; padding: 18px 12px;
     color: var(--muted); font-family: 'Lora', Georgia, serif;
-    font-style: italic; font-size: 15px;
+    font-style: italic; font-size: 14px;
+  }
+
+  /* Metrics button (small, discreet) */
+  .metrics-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 14px;
+    background: transparent;
+    color: var(--spectrum-blue);
+    border: 1px solid var(--solutions-silver);
+    border-radius: 999px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 14px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; user-select: none;
+    transition: all 0.15s;
+  }
+  .metrics-btn:hover { background: var(--alliance-blue); border-color: var(--killian-blue); color: var(--killian-blue); }
+  .metrics-btn .icon {
+    display: inline-block; width: 14px; height: 14px;
+    background: currentColor;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 3h2v18H3V3zm4 12h2v6H7v-6zm4-8h2v14h-2V7zm4 4h2v10h-2V11zm4-6h2v16h-2V5z'/></svg>") center / contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 3h2v18H3V3zm4 12h2v6H7v-6zm4-8h2v14h-2V7zm4 4h2v10h-2V11zm4-6h2v16h-2V5z'/></svg>") center / contain no-repeat;
+  }
+
+  /* Metrics modal */
+  .modal.metrics-modal {
+    width: min(1100px, 96vw);
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+  .metrics-toolbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 18px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--hairline);
+    flex-wrap: wrap;
+  }
+  .metrics-toolbar .label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--muted);
+  }
+  .period-pills { display: inline-flex; gap: 4px; }
+  .period-pill {
+    padding: 6px 12px; border: 1px solid var(--hairline);
+    border-radius: 999px; cursor: pointer; user-select: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 12px; color: var(--spectrum-blue);
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .period-pill:hover { border-color: var(--killian-blue); }
+  .period-pill.active {
+    background: var(--spectrum-blue); color: #fff; border-color: var(--spectrum-blue);
+  }
+
+  .metrics-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 16px 18px 18px;
+  }
+  .metrics-card {
+    background: #fff; border: 1px solid var(--hairline);
+    border-radius: 6px; padding: 14px 16px;
+  }
+  .metrics-card.full { grid-column: 1 / -1; }
+  .metrics-card .head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .metrics-card h3 {
+    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--spectrum-blue); margin: 0;
+  }
+  .metrics-card .sub {
+    font-family: 'Lora', Georgia, serif; font-style: italic;
+    font-size: 12px; color: var(--muted);
+  }
+  .chart-wrap { position: relative; height: 220px; }
+  .chart-wrap.tall { height: 280px; }
+  .metrics-empty {
+    text-align: center; padding: 28px 12px;
+    color: var(--muted); font-family: 'Lora', Georgia, serif;
+    font-style: italic; font-size: 13px;
   }
 
   /* Out-of-hours tag */
   .ooh-tag {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 7px 14px;
+    padding: 9px 16px;
     background: var(--lab-gold); color: #fff;
     border-radius: 999px;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 700; font-size: 13px;
+    font-weight: 700; font-size: 15px;
     letter-spacing: 0.06em; text-transform: uppercase;
     cursor: pointer; user-select: none;
     transition: filter 0.15s;
@@ -349,8 +552,8 @@
   .ooh-tag.empty { background: var(--solutions-silver); cursor: default; }
   .ooh-tag .num {
     background: rgba(255,255,255,0.25);
-    padding: 2px 10px; border-radius: 999px;
-    font-weight: 800; font-size: 14px;
+    padding: 2px 12px; border-radius: 999px;
+    font-weight: 800; font-size: 17px;
   }
 
   /* OOH modal extras */
@@ -387,12 +590,13 @@
   }
 
   /* Hot list */
-  .hot-list { padding: 0; }
+  .hot-list { padding: 0; flex: 1; min-height: 0; overflow-y: auto; }
   .hot-row {
-    padding: 14px 18px; border-bottom: 1px solid var(--hairline);
+    padding: 8px 16px; border-bottom: 1px solid var(--hairline);
     display: grid; grid-template-columns: auto auto 1fr auto; gap: 12px;
     align-items: center;
     cursor: pointer; transition: background 0.15s;
+    font-size: 14px;
   }
   .hot-row:hover { background: var(--bg); }
   .hot-row.expanded { background: var(--alliance-blue); }
@@ -516,7 +720,7 @@
   }
   .hot-tag {
     font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px;
-    padding: 4px 11px; border-radius: 999px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 999px; text-transform: uppercase;
     letter-spacing: 0.06em;
   }
   .hot-tag.rush { background: #FCE4E4; color: #8C1F1F; }
@@ -524,7 +728,7 @@
   .hot-tag.new-date, .hot-tag.verified-date { background: var(--alliance-blue); color: var(--spectrum-blue); }
   .hot-tag.other { background: var(--bg); color: var(--muted); }
   .hot-meta {
-    font-family: 'Lora', Georgia, serif; font-size: 14px;
+    font-family: 'Lora', Georgia, serif; font-size: 13px;
     color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .hot-due {
@@ -555,7 +759,20 @@
     <span class="brand-name">SPECTRUM KILLIAN</span>
     <span class="brand-sub">AOX · Day-By-The-Hour</span>
   </div>
+  <div class="top-title-wrap">
+    <div class="top-title" id="top-title">
+      <div>
+        <h1 id="station-title">Station Health</h1>
+        <div class="sub">AOX &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
+      </div>
+      <span class="title-chev">▼</span>
+    </div>
+    <div class="station-pop" id="station-pop"></div>
+  </div>
   <div class="top-actions">
+    <button class="metrics-btn" id="metrics-btn" title="Open analytics">
+      <span class="icon"></span>Metrics
+    </button>
     <span class="ooh-tag empty" id="ooh-tag" title="Click for breakdown">
       Out of Hours
       <span class="num" id="ooh-num">0</span>
@@ -564,40 +781,7 @@
   </div>
 </div>
 
-<div class="tabs" id="tabs">
-  <div class="tab" style="opacity:0.5">Loading stations…</div>
-</div>
-
 <div id="err" class="err-banner"></div>
-
-<div class="header-row">
-  <div class="title-card">
-    <div>
-      <h1 id="station-title">Station Health</h1>
-      <div class="subtitle">AOX &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
-    </div>
-  </div>
-  <div class="side-stack">
-    <div class="pill" id="near-miss-pill">
-      <span class="label">Near Miss</span>
-      <span class="count" id="near-miss-count">0</span>
-    </div>
-    <div class="pill" id="ideas-pill">
-      <span class="label">Ideas</span>
-      <span class="count" id="ideas-count">0</span>
-    </div>
-  </div>
-</div>
-
-<div class="wip-banner" id="wip-banner">
-  <div>
-    <div class="wip-num" id="wip-num">—</div>
-  </div>
-  <div>
-    <div class="wip-label">Work In Progress</div>
-    <div class="wip-sub" id="wip-sub">cases currently parked at this station</div>
-  </div>
-</div>
 
 <div class="board">
   <div class="panel">
@@ -608,30 +792,54 @@
           <th class="actual-col">Actual</th>
           <th class="target-col">Target</th>
           <th class="pct-col">% Complete</th>
+          <th class="log-col" title="Log miss reason">Miss</th>
         </tr>
       </thead>
       <tbody id="hour-body">
-        <tr><td colspan="4" class="loading">Loading hourly data…</td></tr>
+        <tr><td colspan="5" class="loading">Loading hourly data…</td></tr>
       </tbody>
     </table>
   </div>
   <div class="right-stack">
     <div class="cumulative-card">
-      <div class="head">Cumulative</div>
-      <div class="cumulative-block">
-        <div class="label">Actual</div>
-        <div class="number" id="cum-actual">—</div>
-        <div class="delta" id="cum-actual-delta">&nbsp;</div>
+      <div class="head">Today's Count</div>
+      <div class="body">
+        <div class="cumulative-block">
+          <div class="label">Actual</div>
+          <div class="number" id="cum-actual">—</div>
+          <div class="delta" id="cum-actual-delta">&nbsp;</div>
+        </div>
+        <div class="cumulative-block target">
+          <div class="label">Target</div>
+          <div class="number" id="cum-target">—</div>
+          <div class="delta">Daily &middot; <span id="daily-target-display">—</span></div>
+        </div>
+        <div class="cumulative-block pct">
+          <div class="label">% Complete</div>
+          <div class="number" id="cum-pct">—</div>
+          <div class="delta" id="cum-pct-sub">&nbsp;</div>
+        </div>
       </div>
-      <div class="cumulative-block target">
-        <div class="label">Target</div>
-        <div class="number" id="cum-target">—</div>
-        <div class="delta">Daily &middot; <span id="daily-target-display">—</span></div>
+    </div>
+
+    <div class="wip-banner" id="wip-banner">
+      <div>
+        <div class="wip-num" id="wip-num">—</div>
       </div>
-      <div class="cumulative-block pct">
-        <div class="label">% Complete</div>
-        <div class="number" id="cum-pct">—</div>
-        <div class="delta" id="cum-pct-sub">&nbsp;</div>
+      <div>
+        <div class="wip-label">Work In Progress</div>
+        <div class="wip-sub" id="wip-sub">cases currently parked at this station</div>
+      </div>
+    </div>
+
+    <div class="dual-pills">
+      <div class="pill" id="near-miss-pill">
+        <span class="label">Near Miss</span>
+        <span class="count" id="near-miss-count">0</span>
+      </div>
+      <div class="pill" id="ideas-pill">
+        <span class="label">Ideas</span>
+        <span class="count" id="ideas-count">0</span>
       </div>
     </div>
 
@@ -665,6 +873,44 @@
     </div>
     <div class="modal-actions">
       <button class="btn ghost" id="ooh-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="metrics-overlay">
+  <div class="modal metrics-modal">
+    <div class="modal-head" id="metrics-title">Metrics</div>
+    <div class="metrics-toolbar">
+      <span class="label">Period</span>
+      <div class="period-pills" id="period-pills">
+        <div class="period-pill active" data-days="7">7 days</div>
+        <div class="period-pill" data-days="14">14 days</div>
+        <div class="period-pill" data-days="30">30 days</div>
+      </div>
+      <span class="label" style="margin-left:auto">Counting</span>
+      <span class="sub" id="metrics-method">—</span>
+    </div>
+    <div class="metrics-grid">
+      <div class="metrics-card full">
+        <div class="head"><h3>Daily Totals</h3><span class="sub">Actual vs target</span></div>
+        <div class="chart-wrap tall"><canvas id="chart-daily"></canvas></div>
+      </div>
+      <div class="metrics-card">
+        <div class="head"><h3>Hourly Pattern</h3><span class="sub">Average per hour over period</span></div>
+        <div class="chart-wrap"><canvas id="chart-hourly"></canvas></div>
+      </div>
+      <div class="metrics-card">
+        <div class="head"><h3>Top Operators</h3><span class="sub">Period total per tech</span></div>
+        <div class="chart-wrap"><canvas id="chart-techs"></canvas></div>
+      </div>
+      <div class="metrics-card full">
+        <div class="head"><h3>Miss Reasons · Pareto</h3><span class="sub" id="pareto-sub">—</span></div>
+        <div class="chart-wrap tall"><canvas id="chart-pareto"></canvas></div>
+        <div class="metrics-empty" id="pareto-empty" style="display:none">No miss reasons logged in this period yet.</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="metrics-close">Close</button>
     </div>
   </div>
 </div>
@@ -786,43 +1032,98 @@
     missLog: [],          // today's miss-log rows
     missReasons: { common: [], station: [] }, // dropdown options
     missReasonsForStation: null, // cache key (station name) for the loaded list
+    selected: [],         // selected stations (1 = single mode, 2+ = compare mode)
+    compareData: {},      // {stationName: {target, hourly, count_method}}
   };
 
-  // Persist last-selected station
-  function saveStation(s) { try { localStorage.setItem('sk_station', s); } catch(e){} }
-  function loadStation()  { try { return localStorage.getItem('sk_station'); } catch(e){ return null; } }
+  // ---------- Station picker (multi-select with checkboxes) ----------
+  function isMulti() { return (state.selected || []).length > 1; }
 
-  // ---------- Tabs ----------
-  function renderTabs() {
-    const tabsEl = document.getElementById('tabs');
-    tabsEl.innerHTML = '';
+  function renderStationPicker() {
+    const pop = document.getElementById('station-pop');
+    pop.innerHTML = '';
     state.stations.forEach(s => {
-      const div = document.createElement('div');
-      div.className = 'tab' + (s.station === state.station ? ' active' : '');
-      div.textContent = s.station;
-      div.addEventListener('click', () => {
-        if (state.station === s.station) return;
-        state.station = s.station;
-        saveStation(s.station);
-        renderTabs();
+      const isOn = state.selected.includes(s.station);
+      const item = document.createElement('div');
+      item.className = 'item' + (isOn ? ' active' : '');
+      item.innerHTML = `<span><span class="check">✓</span>${s.station}</span>`;
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = state.selected.indexOf(s.station);
+        if (idx >= 0) {
+          // unselect — but keep at least 1
+          if (state.selected.length > 1) state.selected.splice(idx, 1);
+        } else {
+          state.selected.push(s.station);
+        }
+        // sort selected by display_order so columns are consistent
+        const order = {};
+        state.stations.forEach((st, i) => order[st.station] = i);
+        state.selected.sort((a, b) => (order[a] ?? 99) - (order[b] ?? 99));
+        state.station = state.selected[0];
+        document.body.classList.toggle('compare-mode', isMulti());
+        renderStationPicker();
+        renderHeader();
         load();
       });
-      tabsEl.appendChild(div);
+      pop.appendChild(item);
     });
+    // Footer row with quick "Single" reset
+    const foot = document.createElement('div');
+    foot.className = 'pop-foot';
+    const cnt = state.selected.length;
+    foot.innerHTML = `<span>${cnt} station${cnt===1?'':'s'} selected</span><a id="reset-single">Reset to single</a>`;
+    foot.querySelector('#reset-single').addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.selected = ['Case Entry'];
+      state.station = 'Case Entry';
+      document.body.classList.remove('compare-mode');
+      pop.classList.remove('open');
+      renderStationPicker();
+      renderHeader();
+      load();
+    });
+    pop.appendChild(foot);
   }
+  function toggleStationPicker(e) {
+    e.stopPropagation();
+    document.getElementById('station-pop').classList.toggle('open');
+  }
+  // Close picker on outside click or Esc
+  document.addEventListener('click', () => {
+    document.getElementById('station-pop').classList.remove('open');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.getElementById('station-pop').classList.remove('open');
+  });
+  document.getElementById('top-title').addEventListener('click', toggleStationPicker);
+  document.getElementById('station-pop').addEventListener('click', (e) => e.stopPropagation());
 
   // ---------- Render ----------
   function renderHeader() {
     document.getElementById('today-label').textContent = fmtLongDate();
     document.getElementById('updated-stamp').textContent = 'Updated ' + fmtTimestamp();
-    document.getElementById('station-title').textContent = state.station || 'Station Health';
-    document.getElementById('count-method').textContent =
-      state.countMethod === 'distinct_case' ? 'cases entered'
-      : state.countMethod === 'distinct_pan' ? 'cases counted'
-      : 'step finishes';
+    const title = document.getElementById('station-title');
+    if (isMulti()) {
+      const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
+      title.innerHTML = '<span class="station-chips">' +
+        state.selected.map(s => `<span class="station-chip">${esc(s)}</span>`).join('') +
+        '</span>';
+      document.getElementById('count-method').textContent = 'aggregate · ' + state.selected.length + ' stations';
+    } else {
+      title.textContent = state.station || 'Station Health';
+      document.getElementById('count-method').textContent =
+        state.countMethod === 'distinct_case' ? 'cases entered'
+        : state.countMethod === 'distinct_pan' ? 'cases counted'
+        : 'units';
+    }
   }
 
   function renderHourly() {
+    if (isMulti()) { renderCompare(); return; }
+    const panel = document.querySelector('.board .panel');
+    // Restore single-station table if it was replaced
+    if (!document.getElementById('hour-body')) restoreSingleTable(panel);
     const tbody = document.getElementById('hour-body');
     const nowHour = getNowLocalHour();
     const nowMin  = getNowLocalMinute();
@@ -856,17 +1157,18 @@
 
       const pctCell = buildPctCell(actual, hourlyTarget, isFuture);
 
-      // Miss-reason affordance for past hours (and current)
-      let missAction = '';
+      // Miss-reason affordance for past hours (and current) — tiny right column
+      let missCell = '<td class="log-cell"></td>';
       if (!isFuture) {
         const entries = (state.missLog || []).filter(ml => ml.hour === h);
         const entryCount = entries.length;
         const totalCases = entries.reduce((s, e) => s + (e.miss_count || 0), 0);
         const hasEntries = entryCount > 0;
-        const label = hasEntries
-          ? `<span class="ma-num">${entryCount}</span> reason${entryCount===1?'':'s'} · ${totalCases} cases`
-          : '+ Log miss reason';
-        missAction = `<div class="miss-action ${hasEntries?'has-entries':''}" data-miss-hour="${h}">${label}</div>`;
+        const label = hasEntries ? totalCases : '+';
+        const title = hasEntries
+          ? `${entryCount} reason${entryCount===1?'':'s'} · ${totalCases} cases — click to edit`
+          : 'Log miss reason';
+        missCell = `<td class="log-cell"><div class="miss-action ${hasEntries?'has-entries':''}" data-miss-hour="${h}" title="${title}">${label}</div></td>`;
       }
 
       rows.push(`
@@ -874,7 +1176,8 @@
           <td class="hour-cell" data-hour="${h}"><span class="chev">▶</span>${fmtHour(h)}</td>
           <td class="actual-cell ${aClass}">${actual}</td>
           <td class="target-cell">${hourlyTarget % 1 === 0 ? hourlyTarget : hourlyTarget.toFixed(1)}</td>
-          <td class="pct-cell">${pctCell}${missAction}</td>
+          <td class="pct-cell">${pctCell}</td>
+          ${missCell}
         </tr>`);
 
       // Quarter-hour expansion
@@ -898,6 +1201,7 @@
               <td class="q-actual ${qaClass}">${qActual}</td>
               <td class="q-target">${quarterTarget % 1 === 0 ? quarterTarget : quarterTarget.toFixed(2)}</td>
               <td class="q-pct">${qPctCell}</td>
+              <td></td>
             </tr>`);
         }
       }
@@ -949,6 +1253,67 @@
       pctEl.classList.add('future');
       pctSub.textContent = 'shift not started';
     }
+  }
+
+  // ---------- Compare-mode table ----------
+  function restoreSingleTable(panel) {
+    panel.innerHTML = `
+      <table class="hourly">
+        <thead>
+          <tr>
+            <th class="hour-col">Hour</th>
+            <th class="actual-col">Actual</th>
+            <th class="target-col">Target</th>
+            <th class="pct-col">% Complete</th>
+            <th class="log-col" title="Log miss reason">Miss</th>
+          </tr>
+        </thead>
+        <tbody id="hour-body"></tbody>
+      </table>`;
+  }
+
+  function renderCompare() {
+    const panel = document.querySelector('.board .panel');
+    const nowHour = getNowLocalHour();
+    const stations = state.selected;
+    const hourlyTargetByStation = {};
+    const actualByStation = {}; // {station: {hr: n}}
+    stations.forEach(stn => {
+      const data = state.compareData[stn] || {};
+      const tgt = parseFloat(data.target) || 0;
+      hourlyTargetByStation[stn] = tgt / Math.max(1, SHIFT_END - SHIFT_START);
+      actualByStation[stn] = {};
+      (data.hourly || []).forEach(r => { actualByStation[stn][r.hr] = r.n; });
+    });
+
+    let html = '<table class="compare"><thead>';
+    html += '<tr class="row-1"><th class="hour-h" rowspan="2">Hour</th>';
+    stations.forEach(stn => { html += `<th>${stn.replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]))}</th>`; });
+    html += '</tr><tr class="row-2">';
+    stations.forEach(stn => {
+      const tgt = hourlyTargetByStation[stn];
+      const tgtDisplay = tgt % 1 === 0 ? tgt : tgt.toFixed(1);
+      html += `<th>tgt ${tgtDisplay}/hr</th>`;
+    });
+    html += '</tr></thead><tbody>';
+
+    for (let h = SHIFT_START; h < SHIFT_END; h++) {
+      const isPast = h < nowHour;
+      const isCurrent = h === nowHour;
+      const isFuture = h > nowHour;
+      const trClass = isCurrent ? 'current' : (isFuture ? 'future' : '');
+      html += `<tr class="${trClass}"><td class="hour-cell">${fmtHour(h)}</td>`;
+      stations.forEach(stn => {
+        const actual = actualByStation[stn][h] ?? 0;
+        const tgt = hourlyTargetByStation[stn];
+        const pct = tgt > 0 ? Math.round((actual / tgt) * 100) : 0;
+        const cls = isPast ? (actual >= tgt ? 'over' : 'under') : '';
+        html += `<td class="${cls}">${actual}<span class="pct-mini">${isFuture ? '—' : pct + '%'}</span></td>`;
+      });
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    panel.innerHTML = html;
   }
 
   function renderSide() {
@@ -1290,6 +1655,218 @@
     }
   }
 
+  // ---------- Metrics modal ----------
+  let metricsCharts = { daily: null, hourly: null, techs: null, pareto: null };
+  let metricsPeriod = 7;
+
+  const SK = {
+    spectrum: '#052030',
+    killian: '#1882C7',
+    dental: '#4ABEEE',
+    gold: '#B3A369',
+    alliance: '#C3E8FA',
+    silver: '#B0B7C3',
+    red: '#b03b1b',
+    green: '#16794d',
+  };
+
+  function destroyMetricsCharts() {
+    Object.values(metricsCharts).forEach(c => { if (c) c.destroy(); });
+    metricsCharts = { daily: null, hourly: null, techs: null, pareto: null };
+  }
+
+  function fmtDateShort(iso) {
+    const [y, m, d] = iso.split('-');
+    return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+      .format(new Date(parseInt(y), parseInt(m) - 1, parseInt(d)));
+  }
+
+  async function loadMetrics() {
+    const station = state.station;
+    if (!station) return;
+    document.getElementById('metrics-title').textContent =
+      'Metrics · ' + station + ' · Last ' + metricsPeriod + ' Days';
+    let data;
+    try {
+      data = await rpc('station_metrics_get', {
+        p_business_unit: BUSINESS_UNIT, p_station: station,
+        p_days: metricsPeriod, p_tz: TZ,
+      });
+    } catch (e) {
+      console.error(e);
+      showErr('Could not load metrics: ' + e.message);
+      return;
+    }
+
+    const methodLabel =
+      data.count_method === 'distinct_case' ? 'cases entered'
+      : data.count_method === 'distinct_pan' ? 'cases (distinct)'
+      : 'units (step finishes)';
+    document.getElementById('metrics-method').textContent = methodLabel;
+
+    destroyMetricsCharts();
+
+    // ─── Daily totals chart ───
+    const daily = data.daily_totals || [];
+    const dailyLabels = daily.map(d => fmtDateShort(d.d));
+    const dailyActual = daily.map(d => d.actual);
+    const dailyTarget = data.target_daily || 0;
+    metricsCharts.daily = new Chart(document.getElementById('chart-daily'), {
+      type: 'bar',
+      data: {
+        labels: dailyLabels,
+        datasets: [
+          {
+            label: 'Actual', data: dailyActual,
+            backgroundColor: dailyActual.map(v => v >= dailyTarget ? SK.green : SK.killian),
+            borderRadius: 4,
+          },
+          {
+            label: 'Target', data: dailyLabels.map(() => dailyTarget),
+            type: 'line', borderColor: SK.gold, borderWidth: 2,
+            borderDash: [6, 4], pointRadius: 0, fill: false, tension: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: SK.spectrum, font: { family: 'Montserrat', size: 11 } } },
+          tooltip: { backgroundColor: SK.spectrum },
+        },
+        scales: {
+          x: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 11 } }, grid: { display: false } },
+          y: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 11 } }, grid: { color: '#ECEFF3' }, beginAtZero: true },
+        },
+      },
+    });
+
+    // ─── Hourly pattern (in-shift hours only) ───
+    const hourly = (data.hourly_pattern || []).filter(h => h.hr >= SHIFT_START && h.hr < SHIFT_END);
+    const hourLabels = [];
+    const hourValues = [];
+    for (let h = SHIFT_START; h < SHIFT_END; h++) {
+      hourLabels.push(fmtHour(h));
+      const hit = hourly.find(x => x.hr === h);
+      hourValues.push(hit ? parseFloat(hit.avg_actual) : 0);
+    }
+    const hourlyTarget = (data.target_daily || 0) / Math.max(1, SHIFT_END - SHIFT_START);
+    metricsCharts.hourly = new Chart(document.getElementById('chart-hourly'), {
+      type: 'bar',
+      data: {
+        labels: hourLabels,
+        datasets: [
+          {
+            label: 'Avg per hour', data: hourValues,
+            backgroundColor: hourValues.map(v => v >= hourlyTarget ? SK.green : SK.killian),
+            borderRadius: 3,
+          },
+          {
+            label: 'Hourly target', data: hourLabels.map(() => hourlyTarget),
+            type: 'line', borderColor: SK.gold, borderWidth: 2,
+            borderDash: [4, 4], pointRadius: 0, fill: false, tension: 0,
+          },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: SK.spectrum, font: { family: 'Montserrat', size: 10 } } } },
+        scales: {
+          x: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 10 } }, grid: { display: false } },
+          y: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 10 } }, grid: { color: '#ECEFF3' }, beginAtZero: true },
+        },
+      },
+    });
+
+    // ─── Top operators ───
+    const techs = (data.tech_totals || []).slice(0, 8);
+    metricsCharts.techs = new Chart(document.getElementById('chart-techs'), {
+      type: 'bar',
+      data: {
+        labels: techs.map(t => t.tech_name),
+        datasets: [{ label: 'Total', data: techs.map(t => t.n), backgroundColor: SK.killian, borderRadius: 3 }],
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 10 } }, grid: { color: '#ECEFF3' }, beginAtZero: true },
+          y: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 10 } }, grid: { display: false } },
+        },
+      },
+    });
+
+    // ─── Pareto ───
+    const pareto = data.miss_pareto || [];
+    const paretoEmpty = document.getElementById('pareto-empty');
+    const paretoCanvas = document.getElementById('chart-pareto');
+    const paretoSub = document.getElementById('pareto-sub');
+    if (pareto.length === 0) {
+      paretoEmpty.style.display = '';
+      paretoCanvas.style.display = 'none';
+      paretoSub.textContent = 'No data yet';
+    } else {
+      paretoEmpty.style.display = 'none';
+      paretoCanvas.style.display = '';
+      const totalCases = pareto.reduce((s, p) => s + p.cases, 0);
+      paretoSub.textContent = totalCases + ' cases · ' + pareto.length + ' reasons';
+
+      // cumulative %
+      let running = 0;
+      const cumPct = pareto.map(p => { running += p.cases; return Math.round((running / totalCases) * 100); });
+
+      metricsCharts.pareto = new Chart(paretoCanvas, {
+        data: {
+          labels: pareto.map(p => p.reason),
+          datasets: [
+            {
+              type: 'bar', label: 'Cases', data: pareto.map(p => p.cases),
+              backgroundColor: SK.killian, borderRadius: 3, yAxisID: 'y',
+            },
+            {
+              type: 'line', label: 'Cumulative %', data: cumPct,
+              borderColor: SK.gold, backgroundColor: SK.gold,
+              borderWidth: 2, pointRadius: 4, pointBackgroundColor: SK.gold,
+              fill: false, tension: 0.1, yAxisID: 'y1',
+            },
+          ],
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: SK.spectrum, font: { family: 'Montserrat', size: 11 } } } },
+          scales: {
+            x: { ticks: { color: SK.spectrum, font: { family: 'Open Sans', size: 10 }, maxRotation: 30, minRotation: 0 }, grid: { display: false } },
+            y:  { position: 'left',  ticks: { color: SK.killian, font: { family: 'Open Sans', size: 10 } }, grid: { color: '#ECEFF3' }, beginAtZero: true, title: { display: true, text: 'Cases', color: SK.spectrum, font: { family: 'Montserrat', size: 11, weight: 'bold' } } },
+            y1: { position: 'right', ticks: { color: SK.gold,    font: { family: 'Open Sans', size: 10 }, callback: v => v + '%' }, grid: { display: false }, beginAtZero: true, max: 100, title: { display: true, text: 'Cumulative %', color: SK.spectrum, font: { family: 'Montserrat', size: 11, weight: 'bold' } } },
+          },
+        },
+      });
+    }
+  }
+
+  function openMetrics() {
+    document.getElementById('metrics-overlay').classList.add('open');
+    setTimeout(loadMetrics, 80); // let modal layout settle so canvases get correct size
+  }
+  function closeMetrics() {
+    document.getElementById('metrics-overlay').classList.remove('open');
+    destroyMetricsCharts();
+  }
+
+  document.getElementById('metrics-btn').addEventListener('click', openMetrics);
+  document.getElementById('metrics-close').addEventListener('click', closeMetrics);
+  document.getElementById('metrics-overlay').addEventListener('click', (e) => {
+    if (e.target.id === 'metrics-overlay') closeMetrics();
+  });
+  document.getElementById('period-pills').addEventListener('click', (e) => {
+    const pill = e.target.closest('.period-pill');
+    if (!pill) return;
+    metricsPeriod = parseInt(pill.dataset.days, 10) || 7;
+    document.querySelectorAll('.period-pill').forEach(p => p.classList.toggle('active', p === pill));
+    loadMetrics();
+  });
+
   document.getElementById('miss-close').addEventListener('click', closeMissModal);
   document.getElementById('miss-add').addEventListener('click', addMiss);
   document.getElementById('miss-overlay').addEventListener('click', (e) => {
@@ -1308,15 +1885,87 @@
   async function loadStations() {
     const list = await rpc('station_health_list', { p_business_unit: BUSINESS_UNIT });
     state.stations = (list || []).map(r => ({ station: r.station, dept: r.target_dept_name, order: r.display_order }));
+    // Always start on Case Entry on every page load (no persistence)
     if (!state.station) {
-      state.station = loadStation() || (state.stations[0] && state.stations[0].station) || null;
+      const ce = state.stations.find(s => s.station === 'Case Entry');
+      state.station = (ce && ce.station) || (state.stations[0] && state.stations[0].station) || null;
     }
-    renderTabs();
+    if (!state.selected || state.selected.length === 0) {
+      state.selected = state.station ? [state.station] : [];
+    }
+    document.body.classList.toggle('compare-mode', isMulti());
+    renderStationPicker();
   }
 
   async function load() {
     if (!state.station) return;
-    // Resilient: each fetch isolated so one failure doesn't blank the rest
+
+    // In compare mode, fetch every selected station in parallel + OOH for the badge
+    if (isMulti()) {
+      try {
+        const [compareResults, oohRes] = await Promise.all([
+          Promise.all(state.selected.map(stn =>
+            rpc('station_health_get', { p_business_unit: BUSINESS_UNIT, p_station: stn, p_tz: TZ })
+              .catch(e => { console.error(stn, e); return null; })
+          )),
+          rpc('station_health_out_of_hours_aox', { p_tz: TZ, p_shift_start: SHIFT_START, p_shift_end: SHIFT_END })
+            .catch(e => { console.error(e); return null; }),
+        ]);
+        state.compareData = {};
+        compareResults.forEach((res, i) => {
+          if (res) state.compareData[state.selected[i]] = res;
+        });
+
+        // Build aggregates so the right column renderers work unchanged
+        const agg = {
+          target: 0, hourly: {}, wip: 0,
+          near: 0, ideas: 0,
+          techs: {}, hotList: [], missLog: [],
+        };
+        Object.values(state.compareData).forEach(d => {
+          agg.target += parseFloat(d.target) || 0;
+          (d.hourly || []).forEach(r => { agg.hourly[r.hr] = (agg.hourly[r.hr] || 0) + r.n; });
+          agg.wip += parseInt(d.wip, 10) || 0;
+          if (d.log) {
+            agg.near  += (d.log.near_misses || []).length;
+            agg.ideas += (d.log.ideas       || []).length;
+          }
+          (d.techs || []).forEach(t => {
+            agg.techs[t.tech_name] = (agg.techs[t.tech_name] || 0) + (t.n || 0);
+          });
+          (d.hot_list || []).forEach(h => agg.hotList.push(h));
+          (d.miss_log || []).forEach(m => agg.missLog.push(m));
+        });
+        state.target = agg.target;
+        state.hourly = agg.hourly;
+        state.wip    = agg.wip;
+        state.log    = { near_misses: new Array(agg.near).fill({}), ideas: new Array(agg.ideas).fill({}) };
+        state.techs  = Object.entries(agg.techs)
+          .map(([tech_name, n]) => ({ tech_name, n }))
+          .sort((a, b) => b.n - a.n).slice(0, 10);
+        state.hotList = agg.hotList.sort((a, b) =>
+          new Date(b.created_at) - new Date(a.created_at)).slice(0, 20);
+        state.missLog = agg.missLog;
+        state.countMethod = 'aggregate';
+        state.ooh = oohRes && typeof oohRes === 'object'
+          ? { total: parseInt(oohRes.total, 10) || 0, rows: oohRes.rows || [] }
+          : { total: 0, rows: [] };
+        clearErr();
+      } catch (e) {
+        console.error(e);
+        showErr('Compare load failed: ' + e.message);
+      }
+      renderHeader();
+      renderHourly();   // delegates to renderCompare for the table
+      renderSide();
+      renderWip();
+      renderTechs();
+      renderHotList();
+      renderOoh();
+      return;
+    }
+
+    // Single-station mode (original)
     let mainErr = null, oohErr = null;
     const [mainRes, oohRes] = await Promise.all([
       rpc('station_health_get', { p_business_unit: BUSINESS_UNIT, p_station: state.station, p_tz: TZ })
