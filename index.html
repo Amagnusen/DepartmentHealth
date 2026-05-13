@@ -39,6 +39,43 @@
   .brand-text .brand-name { font-weight: 800; letter-spacing: 0.06em; color: var(--spectrum-blue); font-size: 22px; }
   .brand-text .brand-sub { font-family: 'Lora', Georgia, serif; font-weight: 400; color: var(--killian-blue); font-size: 14px; margin-top: 3px; letter-spacing: 0.02em; }
 
+  /* BU switcher — clickable pill in the top-left */
+  .bu-switcher {
+    position: relative;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 5px;
+    padding: 4px 12px;
+    background: var(--killian-blue); color: #fff;
+    border-radius: 999px; cursor: pointer; user-select: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    transition: filter 0.15s;
+    width: fit-content;
+  }
+  .bu-switcher:hover { filter: brightness(1.1); }
+  .bu-switcher .bu-chev { font-size: 11px; line-height: 1; color: var(--dental-blue); }
+  .bu-pop {
+    display: none; position: absolute; top: calc(100% + 6px); left: 0;
+    background: #fff; border: 2px solid var(--spectrum-blue);
+    border-radius: 6px; box-shadow: 0 14px 36px rgba(5,32,48,0.2);
+    z-index: 60; min-width: 200px; overflow: hidden;
+  }
+  .bu-pop.open { display: block; }
+  .bu-pop .item {
+    padding: 10px 16px; cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 13px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--spectrum-blue);
+    border-bottom: 1px solid var(--hairline);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .bu-pop .item:last-child { border-bottom: none; }
+  .bu-pop .item:hover { background: var(--alliance-blue); }
+  .bu-pop .item.active { background: var(--spectrum-blue); color: #fff; }
+  .bu-pop .item.active::after { content: "✓"; color: var(--dental-blue); margin-left: auto; }
+
   /* Center title-as-station-picker in top bar */
   .top-title-wrap {
     flex: 1; display: flex; justify-content: center; align-items: center;
@@ -115,19 +152,19 @@
     table-layout: fixed; width: 100%; height: 100%;
     border-collapse: collapse; font-family: 'Open Sans', sans-serif;
   }
+  table.compare thead .row-1 th.hour-h { width: 110px; background: #0A3550; }
   table.compare thead .row-1 th {
     background: var(--spectrum-blue); color: #fff;
     font-family: 'Montserrat', sans-serif; font-weight: 800;
-    font-size: 16px; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 10px 6px; text-align: center;
+    font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 12px 6px; text-align: center;
     border-right: 1px solid rgba(255,255,255,0.15);
   }
   table.compare thead .row-1 th:last-child { border-right: none; }
-  table.compare thead .row-1 th.hour-h { background: #0A3550; }
   table.compare thead .row-2 th {
     background: var(--bg); color: var(--muted);
     font-family: 'Open Sans', sans-serif; font-weight: 600;
-    font-size: 13px; padding: 6px 6px; text-align: center;
+    font-size: 16px; padding: 8px 6px; text-align: center;
     border-bottom: 1px solid var(--hairline);
     border-right: 1px solid var(--hairline);
   }
@@ -137,12 +174,12 @@
     border-bottom: 1px solid var(--hairline);
     border-right: 1px solid var(--hairline);
     font-family: 'Montserrat', sans-serif; font-weight: 800;
-    font-size: 26px; color: var(--spectrum-blue);
+    font-size: 38px; color: var(--spectrum-blue);
     background: #fff;
   }
   table.compare tbody td:last-child { border-right: none; }
   table.compare tbody td.hour-cell {
-    background: #F4F7FA; font-size: 18px;
+    background: #F4F7FA; font-size: 24px;
   }
   table.compare tbody td.over { color: #16794d; }
   table.compare tbody td.under { color: #b03b1b; }
@@ -151,8 +188,8 @@
   table.compare tbody tr.current td.hour-cell { background: var(--dental-blue); color: #fff; }
   table.compare tbody td .pct-mini {
     display: block; font-family: 'Open Sans', sans-serif;
-    font-weight: 600; font-size: 12px; color: var(--muted); line-height: 1.2;
-    margin-top: 2px;
+    font-weight: 600; font-size: 16px; color: var(--muted); line-height: 1.2;
+    margin-top: 4px;
   }
   table.compare tbody td.over .pct-mini { color: #16794d; }
   table.compare tbody td.under .pct-mini { color: #b03b1b; }
@@ -165,13 +202,13 @@
   }
   .station-chip {
     display: inline-block;
-    padding: 6px 14px;
+    padding: 8px 16px;
     background: rgba(74,190,238,0.18);
     border: 1px solid var(--dental-blue);
-    border-radius: 4px;
+    border-radius: 5px;
     color: #fff;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 700; font-size: 18px;
+    font-weight: 700; font-size: 22px;
     letter-spacing: 0.04em; text-transform: uppercase;
     line-height: 1.1;
   }
@@ -217,10 +254,10 @@
     cursor: pointer; transition: background 0.15s;
   }
   .pill:hover { background: var(--alliance-blue); }
-  .pill .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
-  .pill .count { font-weight: 800; font-size: 34px; color: var(--killian-blue); min-width: 32px; text-align: right; line-height: 1; }
+  .pill .label { font-weight: 700; font-size: 19px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
+  .pill .count { font-weight: 800; font-size: 44px; color: var(--killian-blue); min-width: 36px; text-align: right; line-height: 1; }
 
-  .board { display: grid; grid-template-columns: minmax(0,1fr) 380px; gap: 12px; align-items: stretch; height: calc(100vh - 100px); min-height: 0; }
+  .board { display: grid; grid-template-columns: minmax(0,1fr) 500px; gap: 12px; align-items: stretch; height: calc(100vh - 100px); min-height: 0; }
   .right-stack { display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
   .panel { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
   .dual-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -235,11 +272,11 @@
     border-right: 1px solid rgba(255,255,255,0.15);
   }
   table.hourly thead th:last-child { border-right: none; }
-  table.hourly thead th.hour-col   { width: 12%; }
-  table.hourly thead th.actual-col { width: 14%; }
-  table.hourly thead th.target-col { width: 14%; }
-  table.hourly thead th.pct-col    { width: 54%; }
-  table.hourly thead th.log-col    { width: 6%; }
+  table.hourly thead th.hour-col   { width: 100px; }
+  table.hourly thead th.actual-col { width: 13%; }
+  table.hourly thead th.target-col { width: 13%; }
+  table.hourly thead th.pct-col    { width: auto; }
+  table.hourly thead th.log-col    { width: 60px; }
   table.hourly tbody td { padding: 8px 8px; text-align: center; font-size: 17px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
   table.hourly tbody td:last-child { border-right: none; }
   table.hourly tbody tr:last-child td { border-bottom: none; }
@@ -334,20 +371,20 @@
   .pct-bar.future .pct-label { color: var(--muted); }
 
   .cumulative-card { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; }
-  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 12px 10px; font-weight: 800; font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
+  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 14px 10px; font-weight: 800; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
   .cumulative-card .head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--dental-blue); }
   .cumulative-card .body { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-  .cumulative-block { padding: 14px 6px; text-align: center; border-right: 1px solid var(--hairline); }
+  .cumulative-block { padding: 18px 6px; text-align: center; border-right: 1px solid var(--hairline); }
   .cumulative-block:last-child { border-right: none; }
-  .cumulative-block .label { font-weight: 700; font-size: 14px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
-  .cumulative-block .number { font-weight: 800; font-size: 44px; color: var(--killian-blue); line-height: 1.05; margin-top: 4px; }
+  .cumulative-block .label { font-weight: 700; font-size: 18px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
+  .cumulative-block .number { font-weight: 800; font-size: 58px; color: var(--killian-blue); line-height: 1.05; margin-top: 6px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
-  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.2; }
+  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--muted); margin-top: 5px; line-height: 1.2; }
   .cumulative-block.pct {
     background: var(--bg);
   }
   .cumulative-block.pct .number {
-    font-size: 44px;
+    font-size: 58px;
     transition: color 0.2s;
   }
   .cumulative-block.pct .number.over    { color: #16794d; }
@@ -384,17 +421,17 @@
     display: flex; align-items: center; gap: 18px;
   }
   .wip-banner .wip-num {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 50px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 64px;
     color: var(--killian-blue); line-height: 1;
   }
   .wip-banner .wip-label {
     font-family: 'Montserrat', sans-serif; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--spectrum-blue); font-size: 17px;
+    color: var(--spectrum-blue); font-size: 22px;
   }
   .wip-banner .wip-sub {
     font-family: 'Lora', Georgia, serif; font-style: italic;
-    color: var(--muted); font-size: 14px; margin-top: 3px; line-height: 1.2;
+    color: var(--muted); font-size: 16px; margin-top: 4px; line-height: 1.2;
   }
   .wip-banner.empty .wip-num { color: var(--solutions-silver); }
 
@@ -405,9 +442,9 @@
   }
   .section-card .head {
     background: var(--spectrum-blue); color: #fff;
-    padding: 12px 16px; font-family: 'Montserrat', sans-serif;
+    padding: 14px 18px; font-family: 'Montserrat', sans-serif;
     font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-    font-size: 16px; position: relative;
+    font-size: 20px; position: relative;
     display: flex; justify-content: space-between; align-items: center;
   }
   .section-card .head::after {
@@ -415,39 +452,39 @@
     height: 3px; background: var(--dental-blue);
   }
   .section-card .head .badge {
-    font-size: 15px; background: var(--dental-blue); color: var(--spectrum-blue);
-    padding: 3px 13px; border-radius: 999px; font-weight: 800;
+    font-size: 18px; background: var(--dental-blue); color: var(--spectrum-blue);
+    padding: 3px 15px; border-radius: 999px; font-weight: 800;
   }
 
   /* Tech leaderboard */
   .section-card { display: flex; flex-direction: column; min-height: 0; }
   .tech-list { padding: 2px 0; flex: 1; min-height: 0; overflow-y: auto; }
   .tech-row {
-    display: grid; grid-template-columns: 32px 1fr auto;
-    align-items: center; padding: 8px 16px;
+    display: grid; grid-template-columns: 38px 1fr auto;
+    align-items: center; padding: 10px 18px;
     border-bottom: 1px solid var(--hairline);
-    gap: 12px;
+    gap: 14px;
   }
   .tech-row:last-child { border-bottom: none; }
   .tech-rank {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 17px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px;
     color: var(--lab-gold); text-align: center;
   }
   .tech-row.r-1 .tech-rank { color: var(--lab-gold); }
   .tech-row.r-2 .tech-rank { color: var(--solutions-silver); }
   .tech-row.r-3 .tech-rank { color: #B8743A; }
   .tech-name {
-    font-family: 'Open Sans', sans-serif; font-size: 16px; color: var(--ink);
+    font-family: 'Open Sans', sans-serif; font-size: 19px; color: var(--ink);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tech-count {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px;
-    color: var(--killian-blue); min-width: 30px; text-align: right;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;
+    color: var(--killian-blue); min-width: 36px; text-align: right;
   }
   .empty-state {
-    text-align: center; padding: 18px 12px;
+    text-align: center; padding: 22px 14px;
     color: var(--muted); font-family: 'Lora', Georgia, serif;
-    font-style: italic; font-size: 14px;
+    font-style: italic; font-size: 17px;
   }
 
   /* Metrics button (small, discreet) */
@@ -592,11 +629,11 @@
   /* Hot list */
   .hot-list { padding: 0; flex: 1; min-height: 0; overflow-y: auto; }
   .hot-row {
-    padding: 8px 16px; border-bottom: 1px solid var(--hairline);
-    display: grid; grid-template-columns: auto auto 1fr auto; gap: 12px;
+    padding: 10px 18px; border-bottom: 1px solid var(--hairline);
+    display: grid; grid-template-columns: auto auto 1fr auto; gap: 14px;
     align-items: center;
     cursor: pointer; transition: background 0.15s;
-    font-size: 14px;
+    font-size: 16px;
   }
   .hot-row:hover { background: var(--bg); }
   .hot-row.expanded { background: var(--alliance-blue); }
@@ -716,11 +753,11 @@
   .miss-form select optgroup { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--spectrum-blue); }
   .hot-case {
     font-family: 'Montserrat', sans-serif; font-weight: 800;
-    color: var(--spectrum-blue); font-size: 16px;
+    color: var(--spectrum-blue); font-size: 19px;
   }
   .hot-tag {
-    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 12px;
-    padding: 3px 10px; border-radius: 999px; text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 14px;
+    padding: 4px 12px; border-radius: 999px; text-transform: uppercase;
     letter-spacing: 0.06em;
   }
   .hot-tag.rush { background: #FCE4E4; color: #8C1F1F; }
@@ -728,11 +765,11 @@
   .hot-tag.new-date, .hot-tag.verified-date { background: var(--alliance-blue); color: var(--spectrum-blue); }
   .hot-tag.other { background: var(--bg); color: var(--muted); }
   .hot-meta {
-    font-family: 'Lora', Georgia, serif; font-size: 13px;
+    font-family: 'Lora', Georgia, serif; font-size: 15px;
     color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .hot-due {
-    font-family: 'Open Sans', sans-serif; font-size: 13px;
+    font-family: 'Open Sans', sans-serif; font-size: 15px;
     color: var(--muted); white-space: nowrap; font-weight: 600;
   }
   .hot-due.overdue { color: #8C1F1F; font-weight: 800; }
@@ -757,13 +794,20 @@
   </svg>
   <div class="brand-text">
     <span class="brand-name">SPECTRUM KILLIAN</span>
-    <span class="brand-sub">AOX · Day-By-The-Hour</span>
+    <div class="bu-switcher" id="bu-switcher" title="Switch business unit">
+      <span id="bu-current">AOX</span>
+      <span class="bu-chev">▼</span>
+      <div class="bu-pop" id="bu-pop">
+        <div class="item" data-bu="AOX">AOX</div>
+        <div class="item" data-bu="CB">Crown &amp; Bridge</div>
+      </div>
+    </div>
   </div>
   <div class="top-title-wrap">
     <div class="top-title" id="top-title">
       <div>
         <h1 id="station-title">Station Health</h1>
-        <div class="sub">AOX &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
+        <div class="sub"><span id="bu-label">AOX</span> &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
       </div>
       <span class="title-chev">▼</span>
     </div>
@@ -961,7 +1005,12 @@
 (() => {
   const SUPABASE_URL = 'https://asdunkqodixbhbohxtuq.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_egid5scBHSz-8we3LiurOw_SpmvJD9u';
-  const BUSINESS_UNIT = 'AOX';
+  // Business unit picked from URL ?bu=AOX|CB (default AOX). New BUs just need station_step_map rows.
+  const BUSINESS_UNIT = (new URLSearchParams(location.search).get('bu') || 'AOX').toUpperCase();
+  const BU_LABEL = {
+    'AOX': 'AOX · Day-By-The-Hour',
+    'CB':  'Crown & Bridge · Day-By-The-Hour',
+  }[BUSINESS_UNIT] || (BUSINESS_UNIT + ' · Day-By-The-Hour');
   const TZ = 'America/Los_Angeles';   // Pacific (PST/PDT)
   const SHIFT_START = 6;
   const SHIFT_END = 20;   // 6am – 8pm window (14 hourly rows)
@@ -1075,8 +1124,9 @@
     foot.innerHTML = `<span>${cnt} station${cnt===1?'':'s'} selected</span><a id="reset-single">Reset to single</a>`;
     foot.querySelector('#reset-single').addEventListener('click', (e) => {
       e.stopPropagation();
-      state.selected = ['Case Entry'];
-      state.station = 'Case Entry';
+      const first = (state.stations[0] && state.stations[0].station) || null;
+      state.selected = first ? [first] : [];
+      state.station = first;
       document.body.classList.remove('compare-mode');
       pop.classList.remove('open');
       renderStationPicker();
@@ -1099,10 +1149,47 @@
   document.getElementById('top-title').addEventListener('click', toggleStationPicker);
   document.getElementById('station-pop').addEventListener('click', (e) => e.stopPropagation());
 
+  // ---------- BU switcher ----------
+  (function setupBuSwitcher() {
+    const swEl  = document.getElementById('bu-switcher');
+    const popEl = document.getElementById('bu-pop');
+    const cur   = document.getElementById('bu-current');
+    // Show current BU label (AOX or C&B)
+    cur.textContent = BUSINESS_UNIT === 'CB' ? 'C&B' : BUSINESS_UNIT;
+    // Mark the active item
+    popEl.querySelectorAll('.item').forEach(item => {
+      item.classList.toggle('active', item.dataset.bu === BUSINESS_UNIT);
+      item.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nextBu = item.dataset.bu;
+        if (nextBu === BUSINESS_UNIT) { popEl.classList.remove('open'); return; }
+        const params = new URLSearchParams(location.search);
+        params.set('bu', nextBu);
+        location.search = params.toString();   // triggers reload with new ?bu=
+      });
+    });
+    swEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popEl.classList.toggle('open');
+      // Close the station picker if it's open
+      document.getElementById('station-pop').classList.remove('open');
+    });
+    popEl.addEventListener('click', (e) => e.stopPropagation());
+    // close on outside click / Esc (the existing outside-click listener also closes it,
+    // since we listen on document and call .remove('open') on station-pop above —
+    // we need an equivalent for bu-pop)
+    document.addEventListener('click', () => popEl.classList.remove('open'));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') popEl.classList.remove('open');
+    });
+  })();
+
   // ---------- Render ----------
   function renderHeader() {
     document.getElementById('today-label').textContent = fmtLongDate();
     document.getElementById('updated-stamp').textContent = 'Updated ' + fmtTimestamp();
+    const bu = document.getElementById('bu-label');
+    if (bu) bu.textContent = BUSINESS_UNIT;
     const title = document.getElementById('station-title');
     if (isMulti()) {
       const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -1885,15 +1972,19 @@
   async function loadStations() {
     const list = await rpc('station_health_list', { p_business_unit: BUSINESS_UNIT });
     state.stations = (list || []).map(r => ({ station: r.station, dept: r.target_dept_name, order: r.display_order }));
-    // Always start on Case Entry on every page load (no persistence)
+    // Always start on the first station for the BU on every page load (no persistence).
+    // For AOX that's Case Entry, for CB that's Data Entry, etc.
     if (!state.station) {
-      const ce = state.stations.find(s => s.station === 'Case Entry');
-      state.station = (ce && ce.station) || (state.stations[0] && state.stations[0].station) || null;
+      state.station = (state.stations[0] && state.stations[0].station) || null;
     }
     if (!state.selected || state.selected.length === 0) {
       state.selected = state.station ? [state.station] : [];
     }
     document.body.classList.toggle('compare-mode', isMulti());
+    // Update the brand subtitle to reflect the BU
+    const brand = document.getElementById('brand-sub-text');
+    if (brand) brand.textContent = BU_LABEL;
+    document.title = 'Station Health — ' + BUSINESS_UNIT;
     renderStationPicker();
   }
 
@@ -1908,7 +1999,7 @@
             rpc('station_health_get', { p_business_unit: BUSINESS_UNIT, p_station: stn, p_tz: TZ })
               .catch(e => { console.error(stn, e); return null; })
           )),
-          rpc('station_health_out_of_hours_aox', { p_tz: TZ, p_shift_start: SHIFT_START, p_shift_end: SHIFT_END })
+          rpc('station_health_out_of_hours', { p_business_unit: BUSINESS_UNIT, p_tz: TZ, p_shift_start: SHIFT_START, p_shift_end: SHIFT_END })
             .catch(e => { console.error(e); return null; }),
         ]);
         state.compareData = {};
@@ -1970,7 +2061,7 @@
     const [mainRes, oohRes] = await Promise.all([
       rpc('station_health_get', { p_business_unit: BUSINESS_UNIT, p_station: state.station, p_tz: TZ })
         .catch(e => { mainErr = e; return null; }),
-      rpc('station_health_out_of_hours_aox', { p_tz: TZ, p_shift_start: SHIFT_START, p_shift_end: SHIFT_END })
+      rpc('station_health_out_of_hours', { p_business_unit: BUSINESS_UNIT, p_tz: TZ, p_shift_start: SHIFT_START, p_shift_end: SHIFT_END })
         .catch(e => { oohErr = e; return null; }),
     ]);
 
