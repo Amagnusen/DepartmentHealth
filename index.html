@@ -22,6 +22,9 @@
     --header-blue: #ABC3D3;       /* muted steel blue — header bars */
     --header-blue-deep: #97B1C3;  /* muted blue — active/selected */
     --solutions-silver: #B0B7C3;  /* Solutions Silver */
+    /* Softened blues — toned down to sit with the muted progress-bar palette */
+    --num-soft: #5B97C2;          /* big figures (Actual / Active) */
+    --accent-soft: #6FA8C8;       /* active tab + small accents */
     --bg: #F4F7FA;
     --card: #FFFFFF;
     --ink: #052030;
@@ -135,10 +138,13 @@
     letter-spacing: 0.08em; text-transform: uppercase; line-height: 1;
   }
   .top-title .sub {
-    font-family: 'Lora', Georgia, serif; font-weight: 400;
+    font-family: 'Montserrat', sans-serif; font-weight: 400;
     font-size: 13px; color: var(--alliance-blue); letter-spacing: 0.04em;
-    margin-top: 4px; line-height: 1;
+    margin-top: 4px; line-height: 1; text-align: center;
   }
+  /* Keep the title + sub-line block centered so the date/count line never
+     drifts left as the station name or counting method changes. */
+  .top-title > div { text-align: center; }
   .top-title .title-chev {
     color: var(--dental-blue); font-size: 22px; line-height: 1; margin-left: 6px;
   }
@@ -418,7 +424,7 @@
   .cumulative-block { padding: 10px 6px; text-align: center; border-right: 1px solid var(--hairline); }
   .cumulative-block:last-child { border-right: none; }
   .cumulative-block .label { font-weight: 700; font-size: 14px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
-  .cumulative-block .number { font-weight: 800; font-size: 46px; color: var(--killian-blue); line-height: 1.05; margin-top: 4px; }
+  .cumulative-block .number { font-weight: 800; font-size: 46px; color: var(--num-soft); line-height: 1.05; margin-top: 4px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
   .cumulative-block .delta { font-family: 'Montserrat', sans-serif; font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
   .cumulative-block.pct {
@@ -473,7 +479,7 @@
   .wip-banner .wip-cell:last-child { border-right: none; }
   .wip-banner .wip-num {
     font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 46px;
-    color: var(--killian-blue); line-height: 1;
+    color: var(--num-soft); line-height: 1;
   }
   .wip-banner .wip-cell.hold .wip-num { color: #B03B1B; }
   .wip-banner .wip-cell.hold.empty .wip-num { color: var(--solutions-silver); }
@@ -511,9 +517,9 @@
   }
   .section-card .head::after { display: none; }
   .section-card .head .badge {
-    font-size: 20px; background: transparent; color: var(--dental-blue);
+    font-size: 20px; background: transparent; color: #fff;
     padding: 0; border-radius: 0; font-weight: 800;
-    text-shadow: 0 0 8px rgba(74,190,238,0.75);
+    text-shadow: 0 0 6px rgba(111,168,200,0.45);
   }
 
   /* Tech leaderboard */
@@ -649,8 +655,8 @@
     background: transparent;
     padding: 0;
     font-weight: 700; font-size: 14px;
-    color: var(--dental-blue);
-    text-shadow: 0 0 8px rgba(74,190,238,0.75);
+    color: #fff;
+    text-shadow: 0 0 6px rgba(111,168,200,0.45);
   }
 
   /* OOH modal extras */
@@ -884,17 +890,37 @@
   /* BU selector — inline pipe-separated tabs in the top-right */
   .bu-tabs { display: inline-flex; align-items: center; }
   .bu-tab {
+    position: relative;
     padding: 2px 14px; cursor: pointer; user-select: none;
     font-family: 'Montserrat', sans-serif; font-weight: 700;
     font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
-    color: rgba(255,255,255,0.55);
+    color: #fff;
     border-right: 1px solid rgba(255,255,255,0.25);
     transition: color 0.15s;
   }
   .bu-tab:first-child { padding-left: 0; }
   .bu-tab:last-child { border-right: none; padding-right: 0; }
-  .bu-tab:hover { color: #fff; }
-  .bu-tab.active { color: var(--dental-blue); }
+  .bu-tab:hover { color: var(--accent-soft); }
+  .bu-tab.active { color: var(--accent-soft); }
+  /* Custom tooltip centered below the hovered tab */
+  .bu-tab[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: calc(100% + 18px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background: rgba(20,30,48,0.96);
+    color: #fff;
+    font-family: 'Montserrat', sans-serif; font-weight: 600;
+    font-size: 16px; letter-spacing: 0.02em; text-transform: none;
+    padding: 7px 13px; border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.12s ease;
+    pointer-events: none; z-index: 50;
+  }
+  .bu-tab[data-tip]:hover::after { opacity: 1; visibility: visible; }
 </style>
 </head>
 <body>
@@ -928,10 +954,10 @@
 
   <div class="bar-right">
     <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
-      <span class="bu-tab" data-bu="AOX">AOX</span>
-      <span class="bu-tab" data-bu="CB">C&amp;B</span>
-      <span class="bu-tab" data-bu="REM_AD">REM-AD</span>
-      <span class="bu-tab" data-bu="REM_PD">REM-PD</span>
+      <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
+      <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
+      <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
+      <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
     </div>
     <span class="updated"><span class="live-dot" id="live-dot"></span><span id="updated-stamp">Connecting…</span></span>
   </div>
@@ -1132,10 +1158,10 @@
   }[BUSINESS_UNIT] || (BUSINESS_UNIT + ' · Day-By-The-Hour');
   // Short labels for the switcher pill
   const BU_SHORT = {
-    'AOX':    'AOX',
+    'AOX':    'FA',
     'CB':     'C&B',
-    'REM_AD': 'REM-AD',
-    'REM_PD': 'REM-PD',
+    'REM_AD': 'REM-A',
+    'REM_PD': 'REM-P',
   };
   const TZ = 'America/Los_Angeles';   // Pacific (PST/PDT)
   const SHIFT_START = 6;
@@ -1614,7 +1640,18 @@
       return;
     }
     const esc = s => String(s ?? '—').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-    const fmtDateShort = d => d ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(new Date(d)) : '—';
+    const fmtDateShort = d => {
+      if (!d) return '—';
+      const s = String(d);
+      // Date-only values (YYYY-MM-DD) carry no time/zone — render the literal
+      // calendar day so converting to PST can't shift it to the day before.
+      const m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      const date = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(s);
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric',
+        timeZone: m ? undefined : TZ,   // full timestamps shown in PST
+      }).format(date);
+    };
     const fmtDateTime = d => d ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: TZ }).format(new Date(d)) : '—';
     const fmtSeconds = s => {
       if (s == null) return '—';
@@ -1627,7 +1664,18 @@
     };
     const now = new Date();
 
-    list.innerHTML = state.hotList.map(h => {
+    // Sort by soonest Doctor Due Date first (overdue/closest at top); cases
+    // with no due date fall to the bottom. Comparison uses absolute instants,
+    // which is timezone-agnostic — display is rendered in PST (TZ) above.
+    const dueMs = h => {
+      const d = h['Doctor Due Date'];
+      if (!d) return Infinity;
+      const t = new Date(d).getTime();
+      return isNaN(t) ? Infinity : t;
+    };
+    const sortedHot = [...state.hotList].sort((a, b) => dueMs(a) - dueMs(b));
+
+    list.innerHTML = sortedHot.map(h => {
       const reason = (h.reason || 'other').toString();
       const tagClass = reason.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       const dueRaw = h['Doctor Due Date'];
@@ -2147,8 +2195,18 @@
         state.techs  = Object.entries(agg.techs)
           .map(([tech_name, n]) => ({ tech_name, n }))
           .sort((a, b) => b.n - a.n).slice(0, 10);
-        state.hotList = agg.hotList.sort((a, b) =>
-          new Date(b.created_at) - new Date(a.created_at)).slice(0, 20);
+        // Keep the 20 soonest-due cases (closest Doctor Due Date first; cases
+        // with no due date sort last) so the most urgent rush work is never
+        // dropped by the cap. renderHotList() re-applies the same ordering.
+        const aggDueMs = h => {
+          const d = h['Doctor Due Date'];
+          if (!d) return Infinity;
+          const t = new Date(d).getTime();
+          return isNaN(t) ? Infinity : t;
+        };
+        state.hotList = agg.hotList
+          .sort((a, b) => aggDueMs(a) - aggDueMs(b))
+          .slice(0, 20);
         state.missLog = agg.missLog;
         state.countMethod = 'aggregate';
         state.ooh = oohRes && typeof oohRes === 'object'
