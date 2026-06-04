@@ -30,11 +30,27 @@
     font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
     font-weight: 400;
   }
-  body { padding: 14px 18px; height: 100vh; font-size: 16px; overflow: hidden; }
+  /* Body is a centering flex container; the actual dashboard is a fixed 1920x1080
+     "design canvas" inside #scale-wrap that gets transform: scale()-d to fit. */
+  body {
+    margin: 0; height: 100vh; overflow: hidden; background: var(--bg);
+    color: var(--ink);
+    font-family: 'Montserrat', 'Helvetica Neue', Arial, sans-serif;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #scale-wrap {
+    width: 1920px; height: 1080px;
+    padding: 8px 14px;
+    background: var(--bg);
+    transform-origin: center center;
+    flex-shrink: 0;
+    position: relative;
+    font-size: 15px;
+  }
 
   /* Top bar */
-  .brand-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
-  .brand-mark { width: 44px; height: 44px; flex-shrink: 0; }
+  .brand-bar { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .brand-mark { width: 38px; height: 38px; flex-shrink: 0; }
   .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
   .brand-text .brand-name { font-weight: 800; letter-spacing: 0.06em; color: var(--spectrum-blue); font-size: 22px; }
   .brand-text .brand-sub { font-family: 'Lora', Georgia, serif; font-weight: 400; color: var(--killian-blue); font-size: 14px; margin-top: 3px; letter-spacing: 0.02em; }
@@ -83,21 +99,21 @@
   }
   .top-title {
     background: linear-gradient(135deg, var(--spectrum-blue) 0%, #0A3550 100%);
-    color: #fff; padding: 14px 28px;
+    color: #fff; padding: 10px 22px;
     border-radius: 8px; cursor: pointer; user-select: none;
-    display: inline-flex; align-items: center; gap: 16px;
+    display: inline-flex; align-items: center; gap: 14px;
     box-shadow: inset 0 -3px 0 var(--dental-blue);
     transition: filter 0.15s;
   }
   .top-title:hover { filter: brightness(1.15); }
   .top-title h1 {
-    margin: 0; font-weight: 800; font-size: 32px;
+    margin: 0; font-weight: 800; font-size: 26px;
     letter-spacing: 0.08em; text-transform: uppercase; line-height: 1;
   }
   .top-title .sub {
     font-family: 'Lora', Georgia, serif; font-weight: 400;
-    font-size: 15px; color: var(--alliance-blue); letter-spacing: 0.04em;
-    margin-top: 6px; line-height: 1;
+    font-size: 13px; color: var(--alliance-blue); letter-spacing: 0.04em;
+    margin-top: 4px; line-height: 1;
   }
   .top-title .title-chev {
     color: var(--dental-blue); font-size: 22px; line-height: 1; margin-left: 6px;
@@ -156,30 +172,30 @@
   table.compare thead .row-1 th {
     background: var(--spectrum-blue); color: #fff;
     font-family: 'Montserrat', sans-serif; font-weight: 800;
-    font-size: 22px; letter-spacing: 0.06em; text-transform: uppercase;
-    padding: 12px 6px; text-align: center;
+    font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 8px 6px; text-align: center;
     border-right: 1px solid rgba(255,255,255,0.15);
   }
   table.compare thead .row-1 th:last-child { border-right: none; }
   table.compare thead .row-2 th {
     background: var(--bg); color: var(--muted);
     font-family: 'Open Sans', sans-serif; font-weight: 600;
-    font-size: 16px; padding: 8px 6px; text-align: center;
+    font-size: 13px; padding: 4px 6px; text-align: center;
     border-bottom: 1px solid var(--hairline);
     border-right: 1px solid var(--hairline);
   }
   table.compare thead .row-2 th:last-child { border-right: none; }
   table.compare tbody td {
-    padding: 6px 6px; text-align: center;
+    padding: 4px 6px; text-align: center;
     border-bottom: 1px solid var(--hairline);
     border-right: 1px solid var(--hairline);
     font-family: 'Montserrat', sans-serif; font-weight: 800;
-    font-size: 38px; color: var(--spectrum-blue);
+    font-size: 30px; color: var(--spectrum-blue);
     background: #fff;
   }
   table.compare tbody td:last-child { border-right: none; }
   table.compare tbody td.hour-cell {
-    background: #F4F7FA; font-size: 24px;
+    background: #F4F7FA; font-size: 20px;
   }
   table.compare tbody td.over { color: #16794d; }
   table.compare tbody td.under { color: #b03b1b; }
@@ -188,8 +204,8 @@
   table.compare tbody tr.current td.hour-cell { background: var(--dental-blue); color: #fff; }
   table.compare tbody td .pct-mini {
     display: block; font-family: 'Open Sans', sans-serif;
-    font-weight: 600; font-size: 16px; color: var(--muted); line-height: 1.2;
-    margin-top: 4px;
+    font-weight: 600; font-size: 13px; color: var(--muted); line-height: 1.2;
+    margin-top: 2px;
   }
   table.compare tbody td.over .pct-mini { color: #16794d; }
   table.compare tbody td.under .pct-mini { color: #b03b1b; }
@@ -250,15 +266,15 @@
   .side-stack { display: flex; flex-direction: column; gap: 16px; }
   .pill {
     background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px;
-    padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 16px; display: flex; justify-content: space-between; align-items: center;
     cursor: pointer; transition: background 0.15s;
   }
   .pill:hover { background: var(--alliance-blue); }
-  .pill .label { font-weight: 700; font-size: 19px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
-  .pill .count { font-weight: 800; font-size: 44px; color: var(--killian-blue); min-width: 36px; text-align: right; line-height: 1; }
+  .pill .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
+  .pill .count { font-weight: 800; font-size: 32px; color: var(--killian-blue); min-width: 32px; text-align: right; line-height: 1; }
 
-  .board { display: grid; grid-template-columns: minmax(0,1fr) 500px; gap: 12px; align-items: stretch; height: calc(100vh - 100px); min-height: 0; }
-  .right-stack { display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
+  .board { display: grid; grid-template-columns: minmax(0,1fr) 460px; gap: 10px; align-items: stretch; height: calc(100% - 76px); min-height: 0; }
+  .right-stack { display: flex; flex-direction: column; gap: 6px; overflow: hidden; min-height: 0; }
   .panel { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; height: 100%; display: flex; flex-direction: column; }
   .dual-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .panel { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; }
@@ -266,8 +282,8 @@
   /* (table base styles consolidated above) */
   table.hourly { table-layout: fixed; height: 100%; }
   table.hourly thead th {
-    background: var(--spectrum-blue); color: #fff; text-align: center; padding: 12px 8px;
-    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 17px;
+    background: var(--spectrum-blue); color: #fff; text-align: center; padding: 8px 8px;
+    font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 18px;
     letter-spacing: 0.08em; text-transform: uppercase;
     border-right: 1px solid rgba(255,255,255,0.15);
   }
@@ -277,10 +293,10 @@
   table.hourly thead th.target-col { width: 13%; }
   table.hourly thead th.pct-col    { width: auto; }
   table.hourly thead th.log-col    { width: 60px; }
-  table.hourly tbody td { padding: 8px 8px; text-align: center; font-size: 17px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
+  table.hourly tbody td { padding: 4px 6px; text-align: center; font-size: 18px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
   table.hourly tbody td:last-child { border-right: none; }
   table.hourly tbody tr:last-child td { border-bottom: none; }
-  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding: 6px 8px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
+  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding: 4px 6px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
   table.hourly tbody td.hour-cell:hover { background: var(--alliance-blue); }
   table.hourly tbody td.hour-cell .chev {
     display: inline-block; margin-right: 6px; transition: transform 0.2s;
@@ -312,11 +328,11 @@
   table.hourly tbody tr.qrow td.q-pct { padding: 7px 18px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar { height: 26px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar .pct-label { font-size: 14px; }
-  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 30px; color: var(--spectrum-blue); }
+  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px; color: var(--spectrum-blue); }
   table.hourly tbody td.actual-cell.over { color: #16794d; }
   table.hourly tbody td.actual-cell.under { color: #b03b1b; }
-  table.hourly tbody td.target-cell { color: var(--muted); font-weight: 600; font-size: 22px; }
-  table.hourly tbody td.pct-cell { padding: 7px 14px; text-align: left; position: relative; }
+  table.hourly tbody td.target-cell { color: var(--muted); font-weight: 600; font-size: 21px; }
+  table.hourly tbody td.pct-cell { padding: 5px 12px; text-align: left; position: relative; }
 
   /* Miss-reason affordance — tiny square button in its own column */
   table.hourly tbody td.log-cell { padding: 2px 4px; text-align: center; }
@@ -327,7 +343,7 @@
     border: 1px solid var(--hairline);
     border-radius: 4px;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 800; font-size: 17px; line-height: 1;
+    font-weight: 800; font-size: 18px; line-height: 1;
     color: var(--muted);
     cursor: pointer; user-select: none;
     transition: all 0.15s;
@@ -344,7 +360,7 @@
   /* % completion bar */
   .pct-bar {
     position: relative;
-    height: 30px;
+    height: 26px;
     background: #ECEFF3;
     border-radius: 4px;
     overflow: hidden;
@@ -363,7 +379,7 @@
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 800; font-size: 16px;
+    font-weight: 800; font-size: 15px;
     color: var(--spectrum-blue);
     letter-spacing: 0.04em;
     text-shadow: 0 0 4px rgba(255,255,255,0.85);
@@ -371,20 +387,20 @@
   .pct-bar.future .pct-label { color: var(--muted); }
 
   .cumulative-card { background: var(--card); border: 2px solid var(--spectrum-blue); border-radius: 6px; overflow: hidden; }
-  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 14px 10px; font-weight: 800; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
+  .cumulative-card .head { background: var(--spectrum-blue); color: #fff; text-align: center; padding: 12px 10px; font-weight: 800; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
   .cumulative-card .head::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--dental-blue); }
   .cumulative-card .body { display: grid; grid-template-columns: 1fr 1fr 1fr; }
-  .cumulative-block { padding: 18px 6px; text-align: center; border-right: 1px solid var(--hairline); }
+  .cumulative-block { padding: 10px 6px; text-align: center; border-right: 1px solid var(--hairline); }
   .cumulative-block:last-child { border-right: none; }
-  .cumulative-block .label { font-weight: 700; font-size: 18px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
-  .cumulative-block .number { font-weight: 800; font-size: 58px; color: var(--killian-blue); line-height: 1.05; margin-top: 6px; }
+  .cumulative-block .label { font-weight: 700; font-size: 14px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
+  .cumulative-block .number { font-weight: 800; font-size: 46px; color: var(--killian-blue); line-height: 1.05; margin-top: 4px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
-  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 14px; color: var(--muted); margin-top: 5px; line-height: 1.2; }
+  .cumulative-block .delta { font-family: 'Open Sans', sans-serif; font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
   .cumulative-block.pct {
     background: var(--bg);
   }
   .cumulative-block.pct .number {
-    font-size: 58px;
+    font-size: 46px;
     transition: color 0.2s;
   }
   .cumulative-block.pct .number.over    { color: #16794d; }
@@ -417,23 +433,43 @@
     background: linear-gradient(90deg, var(--alliance-blue) 0%, #fff 60%);
     border: 2px solid var(--killian-blue);
     border-radius: 6px;
-    padding: 14px 20px;
-    display: flex; align-items: center; gap: 18px;
+    padding: 8px 12px;
   }
+  .wip-banner .wip-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 4px;
+  }
+  .wip-banner .wip-cell {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 2px 4px;
+    border-right: 1px solid rgba(5,32,48,0.12);
+  }
+  .wip-banner .wip-cell:last-child { border-right: none; }
   .wip-banner .wip-num {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 64px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 46px;
     color: var(--killian-blue); line-height: 1;
   }
+  .wip-banner .wip-cell.hold .wip-num { color: #B03B1B; }
+  .wip-banner .wip-cell.hold.empty .wip-num { color: var(--solutions-silver); }
+  .wip-banner .wip-cell.active.empty .wip-num { color: var(--solutions-silver); }
+  .wip-banner .wip-cell-label {
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--spectrum-blue); font-size: 16px;
+    margin-top: 4px;
+  }
+  .wip-banner .wip-cell.hold .wip-cell-label { color: #8C1F1F; }
   .wip-banner .wip-label {
     font-family: 'Montserrat', sans-serif; font-weight: 700;
     text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--spectrum-blue); font-size: 22px;
+    color: var(--spectrum-blue); font-size: 18px;
+    text-align: center;
   }
   .wip-banner .wip-sub {
     font-family: 'Lora', Georgia, serif; font-style: italic;
-    color: var(--muted); font-size: 16px; margin-top: 4px; line-height: 1.2;
+    color: var(--muted); font-size: 18px; margin-top: 4px; line-height: 1.2;
+    text-align: center;
   }
-  .wip-banner.empty .wip-num { color: var(--solutions-silver); }
 
   /* Lower row removed — content now lives in .right-stack */
   .section-card {
@@ -442,9 +478,9 @@
   }
   .section-card .head {
     background: var(--spectrum-blue); color: #fff;
-    padding: 14px 18px; font-family: 'Montserrat', sans-serif;
+    padding: 12px 16px; font-family: 'Montserrat', sans-serif;
     font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-    font-size: 20px; position: relative;
+    font-size: 19px; position: relative;
     display: flex; justify-content: space-between; align-items: center;
   }
   .section-card .head::after {
@@ -452,18 +488,18 @@
     height: 3px; background: var(--dental-blue);
   }
   .section-card .head .badge {
-    font-size: 18px; background: var(--dental-blue); color: var(--spectrum-blue);
-    padding: 3px 15px; border-radius: 999px; font-weight: 800;
+    font-size: 20px; background: var(--dental-blue); color: var(--spectrum-blue);
+    padding: 4px 16px; border-radius: 999px; font-weight: 800;
   }
 
   /* Tech leaderboard */
-  .section-card { display: flex; flex-direction: column; min-height: 0; }
-  .tech-list { padding: 2px 0; flex: 1; min-height: 0; overflow-y: auto; }
+  .section-card { display: flex; flex-direction: column; min-height: 0; flex: 1 1 0; overflow: hidden; }
+  .tech-list { padding: 2px 0; flex: 1 1 0; min-height: 0; overflow-y: auto; }
   .tech-row {
-    display: grid; grid-template-columns: 38px 1fr auto;
-    align-items: center; padding: 10px 18px;
+    display: grid; grid-template-columns: 34px 1fr auto;
+    align-items: center; padding: 6px 16px;
     border-bottom: 1px solid var(--hairline);
-    gap: 14px;
+    gap: 12px;
   }
   .tech-row:last-child { border-bottom: none; }
   .tech-rank {
@@ -478,13 +514,13 @@
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tech-count {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px;
+    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 26px;
     color: var(--killian-blue); min-width: 36px; text-align: right;
   }
   .empty-state {
-    text-align: center; padding: 22px 14px;
+    text-align: center; padding: 28px 14px;
     color: var(--muted); font-family: 'Lora', Georgia, serif;
-    font-style: italic; font-size: 17px;
+    font-style: italic; font-size: 20px;
   }
 
   /* Metrics button (small, discreet) */
@@ -629,11 +665,11 @@
   /* Hot list */
   .hot-list { padding: 0; flex: 1; min-height: 0; overflow-y: auto; }
   .hot-row {
-    padding: 10px 18px; border-bottom: 1px solid var(--hairline);
-    display: grid; grid-template-columns: auto auto 1fr auto; gap: 14px;
+    padding: 6px 16px; border-bottom: 1px solid var(--hairline);
+    display: grid; grid-template-columns: auto auto 1fr auto; gap: 12px;
     align-items: center;
     cursor: pointer; transition: background 0.15s;
-    font-size: 16px;
+    font-size: 15px;
   }
   .hot-row:hover { background: var(--bg); }
   .hot-row.expanded { background: var(--alliance-blue); }
@@ -781,6 +817,7 @@
 </style>
 </head>
 <body>
+<div id="scale-wrap">
 
 <div class="brand-bar">
   <svg class="brand-mark" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
@@ -800,6 +837,8 @@
       <div class="bu-pop" id="bu-pop">
         <div class="item" data-bu="AOX">AOX</div>
         <div class="item" data-bu="CB">Crown &amp; Bridge</div>
+        <div class="item" data-bu="REM_AD">Removable Analog</div>
+        <div class="item" data-bu="REM_PD">Removable Printed</div>
       </div>
     </div>
   </div>
@@ -867,24 +906,18 @@
     </div>
 
     <div class="wip-banner" id="wip-banner">
-      <div>
-        <div class="wip-num" id="wip-num">—</div>
+      <div class="wip-row">
+        <div class="wip-cell active" id="wip-active-cell">
+          <div class="wip-num" id="wip-num">—</div>
+          <div class="wip-cell-label">Active</div>
+        </div>
+        <div class="wip-cell hold" id="wip-hold-cell">
+          <div class="wip-num" id="wip-hold-num">—</div>
+          <div class="wip-cell-label">On Hold</div>
+        </div>
       </div>
-      <div>
-        <div class="wip-label">Work In Progress</div>
-        <div class="wip-sub" id="wip-sub">cases currently parked at this station</div>
-      </div>
-    </div>
-
-    <div class="dual-pills">
-      <div class="pill" id="near-miss-pill">
-        <span class="label">Near Miss</span>
-        <span class="count" id="near-miss-count">0</span>
-      </div>
-      <div class="pill" id="ideas-pill">
-        <span class="label">Ideas</span>
-        <span class="count" id="ideas-count">0</span>
-      </div>
+      <div class="wip-label">Work In Progress</div>
+      <div class="wip-sub" id="wip-sub">cases currently parked at this station</div>
     </div>
 
     <div class="section-card">
@@ -904,6 +937,17 @@
       </div>
       <div class="hot-list" id="hot-list">
         <div class="empty-state">Nothing hot at this station.</div>
+      </div>
+    </div>
+
+    <div class="dual-pills">
+      <div class="pill" id="near-miss-pill">
+        <span class="label">Near Miss</span>
+        <span class="count" id="near-miss-count">0</span>
+      </div>
+      <div class="pill" id="ideas-pill">
+        <span class="label">Ideas</span>
+        <span class="count" id="ideas-count">0</span>
       </div>
     </div>
   </div>
@@ -1008,9 +1052,18 @@
   // Business unit picked from URL ?bu=AOX|CB (default AOX). New BUs just need station_step_map rows.
   const BUSINESS_UNIT = (new URLSearchParams(location.search).get('bu') || 'AOX').toUpperCase();
   const BU_LABEL = {
-    'AOX': 'AOX · Day-By-The-Hour',
-    'CB':  'Crown & Bridge · Day-By-The-Hour',
+    'AOX':    'AOX · Day-By-The-Hour',
+    'CB':     'Crown & Bridge · Day-By-The-Hour',
+    'REM_AD': 'Removable Analog · Day-By-The-Hour',
+    'REM_PD': 'Removable Printed · Day-By-The-Hour',
   }[BUSINESS_UNIT] || (BUSINESS_UNIT + ' · Day-By-The-Hour');
+  // Short labels for the switcher pill
+  const BU_SHORT = {
+    'AOX':    'AOX',
+    'CB':     'C&B',
+    'REM_AD': 'REM-AD',
+    'REM_PD': 'REM-PD',
+  };
   const TZ = 'America/Los_Angeles';   // Pacific (PST/PDT)
   const SHIFT_START = 6;
   const SHIFT_END = 20;   // 6am – 8pm window (14 hourly rows)
@@ -1072,6 +1125,7 @@
     log: { near_misses: [], ideas: [] },
     countMethod: 'distinct_pan',
     wip: 0,
+    wipHold: 0,
     hotList: [],
     techs: [],
     ooh: { total: 0, rows: [] },
@@ -1154,8 +1208,8 @@
     const swEl  = document.getElementById('bu-switcher');
     const popEl = document.getElementById('bu-pop');
     const cur   = document.getElementById('bu-current');
-    // Show current BU label (AOX or C&B)
-    cur.textContent = BUSINESS_UNIT === 'CB' ? 'C&B' : BUSINESS_UNIT;
+    // Show current BU short label
+    cur.textContent = BU_SHORT[BUSINESS_UNIT] || BUSINESS_UNIT;
     // Mark the active item
     popEl.querySelectorAll('.item').forEach(item => {
       item.classList.toggle('active', item.dataset.bu === BUSINESS_UNIT);
@@ -1410,18 +1464,23 @@
   }
 
   function renderWip() {
-    const banner = document.getElementById('wip-banner');
     const num = document.getElementById('wip-num');
+    const holdNum = document.getElementById('wip-hold-num');
     const sub = document.getElementById('wip-sub');
+    const activeCell = document.getElementById('wip-active-cell');
+    const holdCell = document.getElementById('wip-hold-cell');
+
     num.textContent = state.wip;
+    holdNum.textContent = state.wipHold;
+    activeCell.classList.toggle('empty', state.wip === 0);
+    holdCell.classList.toggle('empty', state.wipHold === 0);
+
     if (state.wip === 0) {
-      banner.classList.add('empty');
-      sub.textContent = 'no cases waiting at this station';
+      sub.textContent = 'no active cases at this station';
     } else {
-      banner.classList.remove('empty');
       const ratio = state.target > 0 ? (state.wip / state.target) : 0;
       const tone = ratio < 0.5 ? 'queue is light' : ratio < 1 ? 'within a day of capacity' : 'backlog exceeds daily target';
-      sub.textContent = 'cases currently parked at this station — ' + tone;
+      sub.textContent = 'active cases at this station — ' + tone;
     }
   }
 
@@ -2076,6 +2135,7 @@
         : { near_misses: [], ideas: [] };
       state.countMethod = mainRes.count_method || 'distinct_pan';
       state.wip = parseInt(mainRes.wip, 10) || 0;
+      state.wipHold = parseInt(mainRes.wip_hold, 10) || 0;
       state.hotList = mainRes.hot_list || [];
       state.techs = mainRes.techs || [];
       state.missLog = mainRes.miss_log || [];
@@ -2120,5 +2180,23 @@
   setInterval(load, REFRESH_MS);
 })();
 </script>
+
+<script>
+// Responsive scaling: the dashboard is designed at a fixed 1920x1080 canvas,
+// then transformed to fit whatever viewport the user has (TV, laptop, phone).
+(function setupScale() {
+  const wrap = document.getElementById('scale-wrap');
+  function fit() {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const scale = Math.min(w / 1920, h / 1080);
+    wrap.style.transform = 'scale(' + scale + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+})();
+</script>
+
+</div><!-- /#scale-wrap -->
 </body>
 </html>
