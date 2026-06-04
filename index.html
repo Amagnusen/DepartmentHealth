@@ -497,11 +497,6 @@
     color: var(--spectrum-blue); font-size: 18px;
     text-align: center;
   }
-  .wip-banner .wip-sub {
-    font-family: 'Lora', Georgia, serif; font-style: italic;
-    color: var(--muted); font-size: 18px; margin-top: 4px; line-height: 1.2;
-    text-align: center;
-  }
 
   /* Lower row removed — content now lives in .right-stack */
   .section-card {
@@ -551,6 +546,10 @@
     text-align: center; padding: 28px 14px;
     color: var(--muted); font-family: 'Lora', Georgia, serif;
     font-style: italic; font-size: 20px;
+  }
+  /* Hot-list empty message uses the same Montserrat face as the title sub-line */
+  #hot-list .empty-state {
+    font-family: 'Montserrat', sans-serif; font-style: normal;
   }
 
   /* Metrics button (small, discreet) */
@@ -1016,7 +1015,6 @@
         </div>
       </div>
       <div class="wip-label">Work In Progress</div>
-      <div class="wip-sub" id="wip-sub">cases currently parked at this station</div>
     </div>
 
     <div class="section-card">
@@ -1546,7 +1544,6 @@
   function renderWip() {
     const num = document.getElementById('wip-num');
     const holdNum = document.getElementById('wip-hold-num');
-    const sub = document.getElementById('wip-sub');
     const activeCell = document.getElementById('wip-active-cell');
     const holdCell = document.getElementById('wip-hold-cell');
 
@@ -1554,14 +1551,6 @@
     holdNum.textContent = state.wipHold;
     activeCell.classList.toggle('empty', state.wip === 0);
     holdCell.classList.toggle('empty', state.wipHold === 0);
-
-    if (state.wip === 0) {
-      sub.textContent = 'no active cases at this station';
-    } else {
-      const ratio = state.target > 0 ? (state.wip / state.target) : 0;
-      const tone = ratio < 0.5 ? 'queue is light' : ratio < 1 ? 'within a day of capacity' : 'backlog exceeds daily target';
-      sub.textContent = 'active cases at this station — ' + tone;
-    }
   }
 
   function renderTechs() {
