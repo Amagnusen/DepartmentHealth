@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Station Health — AOX</title>
+<title>ClearPath OS · DPM Module</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,12 +25,19 @@
     /* Softened blues — toned down to sit with the muted progress-bar palette */
     --num-soft: #5B97C2;          /* big figures (Actual / Active) */
     --accent-soft: #6FA8C8;       /* active tab + small accents */
-    --bg: #F4F7FA;
+    /* App background / line tokens snapped to exact ClearPath OS light values */
+    --bg: #EEF3F8;                /* app background (design system) */
     --card: #FFFFFF;
     --ink: #052030;
     --muted: #6B7785;             /* soft slate body text */
     --slate-light: #DDE2E8;
-    --hairline: #E3E8EE;          /* soft 1px card frame */
+    --hairline: #DDE6EE;          /* line token (design system) */
+    /* ClearPath OS standardized header tokens (light theme) */
+    --cpx-bg: #FFFFFF;            /* header fill        */
+    --cpx-border: #DDE6EE;        /* header border      */
+    --cpx-divider: #C6D4E0;       /* vertical divider   */
+    --cpx-module: #0E2433;        /* module title color */
+    --cpx-gold: #B3A369;          /* "Operating System" */
     /* Light, airy surface system ported from the Case Coordination look */
     --radius: 12px;
     --radius-sm: 9px;
@@ -62,25 +69,43 @@
     font-size: 15px;
   }
 
-  /* Top bar */
-  .brand-bar {
-    display: flex; align-items: center; gap: 18px;
-    margin-bottom: 8px; padding: 8px 20px;
-    background: var(--spectrum-blue);
-    border-radius: var(--radius);
+  /* ============================================================
+     ClearPath OS — STANDARD MODULE HEADER (light theme)
+     Per HEADER-SPEC.pdf. Left lockup + right Spectrum Killian logo are
+     FIXED across every module app; only the module title and slot change.
+     ============================================================ */
+  .cpx-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 8px;
+    padding: 10px 16px;                 /* 10 top/bottom · 16 left/right */
+    background: var(--cpx-bg);
+    border: 1px solid var(--cpx-border);
+    border-radius: 12px;
     box-shadow: var(--soft-shadow);
   }
-  .brand-mark {
-    height: 50px; width: 230px; flex-shrink: 0;
-    display: flex; align-items: center;
-    overflow: hidden;
+  /* LEFT — brand lockup + module title (FIXED) */
+  .cpx-brandgroup { display: flex; align-items: flex-end; gap: 14px; flex-shrink: 0; }
+  .cpx-logostack { position: relative; display: flex; flex-direction: column; align-items: flex-start; }
+  .cpx-clearpath { height: 34px; width: auto; display: block; }   /* ClearPath logo = 34px tall */
+  .cpx-os {                                                        /* OPERATING SYSTEM */
+    position: absolute; top: 100%; left: 0; margin-top: 2px; margin-left: 43px;
+    font-size: 8px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--cpx-gold); white-space: nowrap;
   }
-  /* The logo art is a horizontal lockup centered in a square canvas with large
-     vertical whitespace — cover + crop trims that padding so it reads bigger. */
-  .brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-  .brand-text .brand-name { font-weight: 800; letter-spacing: 0.06em; color: var(--spectrum-blue); font-size: 22px; }
-  .brand-text .brand-sub { font-family: 'Lora', Georgia, serif; font-weight: 400; color: var(--killian-blue); font-size: 14px; margin-top: 3px; letter-spacing: 0.02em; }
+  .cpx-divider { align-self: flex-end; width: 1px; height: 30px; margin-bottom: 1px; background: var(--cpx-divider); }
+  .cpx-module {                                                    /* module name */
+    position: relative; bottom: 4px;          /* baseline-aligns with ClearPath wordmark */
+    font-size: 21px; font-weight: 800; line-height: 1; letter-spacing: -.3px;
+    color: var(--cpx-module); white-space: nowrap;
+  }
+  /* MIDDLE — designer's free area (tools, station picker, BU tabs, status) */
+  .cpx-slot { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 18px; }
+  /* RIGHT — Spectrum Killian endorsement (FIXED) */
+  .cpx-sk { height: 76px; width: auto; display: block; flex-shrink: 0; }   /* SK logo = 76px tall */
+  @media (max-width: 760px) {
+    .cpx-module { font-size: 17px; }
+    .cpx-sk { height: 58px; }
+  }
 
   /* BU switcher — clickable pill in the top-left */
   .bu-switcher {
@@ -259,7 +284,7 @@
     line-height: 1.1;
   }
   .top-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
-  .updated { font-size: 11px; color: rgba(255,255,255,0.7); font-family: 'Montserrat', sans-serif; }
+  .updated { font-size: 11px; color: var(--muted); font-family: 'Montserrat', sans-serif; }
   .live-dot {
     display: inline-block; width: 8px; height: 8px; border-radius: 50%;
     background: #16794d; margin-right: 6px; box-shadow: 0 0 0 0 rgba(22,121,77,0.6);
@@ -305,7 +330,7 @@
   .pill .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
   .pill .count { font-weight: 800; font-size: 32px; color: var(--spectrum-blue); min-width: 32px; text-align: right; line-height: 1; }
 
-  .board { display: grid; grid-template-columns: minmax(0,1fr) 460px; gap: 14px; align-items: stretch; height: calc(100% - 76px); min-height: 0; }
+  .board { display: grid; grid-template-columns: minmax(0,1fr) 460px; gap: 14px; align-items: stretch; height: calc(100% - 112px); min-height: 0; }
   .right-stack { display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
   .panel { background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); box-shadow: var(--soft-shadow); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
   .dual-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -557,7 +582,7 @@
     display: inline-flex; align-items: center;
     padding: 0;
     background: transparent;
-    color: #fff;
+    color: var(--spectrum-blue);
     border: none;
     font-family: 'Montserrat', sans-serif;
     font-weight: 600; font-size: 14px;
@@ -565,7 +590,7 @@
     cursor: pointer; user-select: none;
     transition: color 0.15s;
   }
-  .metrics-btn:hover { color: var(--dental-blue); }
+  .metrics-btn:hover { color: var(--killian-blue); }
   .metrics-btn .icon {
     display: inline-block; width: 14px; height: 14px;
     background: currentColor;
@@ -641,21 +666,20 @@
   .ooh-tag {
     display: inline-flex; align-items: center; gap: 6px;
     padding: 0;
-    background: transparent; color: #fff;
+    background: transparent; color: var(--spectrum-blue);
     font-family: 'Montserrat', sans-serif;
     font-weight: 600; font-size: 14px;
     letter-spacing: 0.06em; text-transform: uppercase;
     cursor: pointer; user-select: none;
     transition: color 0.15s;
   }
-  .ooh-tag:hover { filter: none; color: var(--dental-blue); }
-  .ooh-tag.empty { background: transparent; cursor: default; }
+  .ooh-tag:hover { filter: none; color: var(--killian-blue); }
+  .ooh-tag.empty { background: transparent; cursor: default; color: var(--muted); }
   .ooh-tag .num {
     background: transparent;
     padding: 0;
     font-weight: 700; font-size: 14px;
-    color: #fff;
-    text-shadow: 0 0 6px rgba(111,168,200,0.45);
+    color: var(--killian-blue);
   }
 
   /* OOH modal extras */
@@ -861,24 +885,24 @@
      Left: logo + (Metrics | Out of Hours), vertically centered.
      Center: Data Entry picker.
      Right: BU tabs (top) + updated time (bottom). */
-  .bar-left { display: flex; align-items: center; gap: 18px; }
-  .bar-tools { display: inline-flex; align-items: center; gap: 12px; }
-  .tool-sep { color: rgba(255,255,255,0.3); font-weight: 400; }
+  .bar-tools { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .tool-sep { color: var(--slate-light); font-weight: 400; }
   .bar-right {
-    align-self: stretch;
+    flex-shrink: 0;
     display: flex; flex-direction: column;
-    justify-content: flex-end; align-items: flex-end;
+    justify-content: center; align-items: flex-end;
     gap: 6px;
   }
 
-  /* Data Entry picker — blends into the bar (same navy), just text + a
+  /* Data Entry picker — blends into the light header, just text + a
      downward triangle. Functionality (station picker popover) unchanged. */
   .top-title {
-    background: transparent; color: #fff;
+    background: transparent; color: var(--spectrum-blue);
     box-shadow: none; border-radius: 6px;
     padding: 4px 10px;
   }
-  .top-title:hover { filter: none; background: rgba(255,255,255,0.07); }
+  .top-title:hover { filter: none; background: var(--alliance-soft); }
+  .top-title .sub { color: var(--muted); }
   .top-title .title-chev {
     width: 0; height: 0; margin-left: 12px; font-size: 0;
     border-left: 7px solid transparent;
@@ -893,14 +917,14 @@
     padding: 2px 14px; cursor: pointer; user-select: none;
     font-family: 'Montserrat', sans-serif; font-weight: 700;
     font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
-    color: #fff;
-    border-right: 1px solid rgba(255,255,255,0.25);
+    color: var(--solutions-silver);
+    border-right: 1px solid var(--slate-light);
     transition: color 0.15s;
   }
   .bu-tab:first-child { padding-left: 0; }
   .bu-tab:last-child { border-right: none; padding-right: 0; }
-  .bu-tab:hover { color: var(--accent-soft); }
-  .bu-tab.active { color: var(--accent-soft); }
+  .bu-tab:hover { color: var(--killian-blue); }
+  .bu-tab.active { color: var(--killian-blue); }
   /* Custom tooltip centered below the hovered tab */
   .bu-tab[data-tip]::after {
     content: attr(data-tip);
@@ -925,11 +949,20 @@
 <body>
 <div id="scale-wrap">
 
-<div class="brand-bar">
-  <div class="bar-left">
-    <div class="brand-mark">
-      <img src="ClearPath_Logo_White.png" alt="ClearPath" />
+<header class="cpx-header">
+
+  <!-- LEFT — ClearPath lockup + module title (FIXED) -->
+  <div class="cpx-brandgroup">
+    <div class="cpx-logostack">
+      <img class="cpx-clearpath" src="logos/clearpath-black.png" alt="ClearPath" />
+      <span class="cpx-os">Operating System</span>
     </div>
+    <span class="cpx-divider"></span>
+    <span class="cpx-module">DPM Module</span>
+  </div>
+
+  <!-- MIDDLE — designer slot: tools · station picker · BU tabs + status -->
+  <div class="cpx-slot">
     <div class="bar-tools">
       <button class="metrics-btn" id="metrics-btn" title="Open analytics">Metrics</button>
       <span class="tool-sep">|</span>
@@ -938,29 +971,32 @@
         <span class="num" id="ooh-num">0</span>
       </span>
     </div>
-  </div>
 
-  <div class="top-title-wrap">
-    <div class="top-title" id="top-title">
-      <div>
-        <h1 id="station-title">Station Health</h1>
-        <div class="sub"><span id="bu-label">AOX</span> &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
+    <div class="top-title-wrap">
+      <div class="top-title" id="top-title">
+        <div>
+          <h1 id="station-title">Station Health</h1>
+          <div class="sub"><span id="bu-label">AOX</span> &middot; <span id="today-label">—</span> &middot; <span id="count-method">—</span></div>
+        </div>
+        <span class="title-chev"></span>
       </div>
-      <span class="title-chev"></span>
+      <div class="station-pop" id="station-pop"></div>
     </div>
-    <div class="station-pop" id="station-pop"></div>
+
+    <div class="bar-right">
+      <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
+        <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
+        <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
+        <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
+        <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
+      </div>
+      <span class="updated"><span class="live-dot" id="live-dot"></span><span id="updated-stamp">Connecting…</span></span>
+    </div>
   </div>
 
-  <div class="bar-right">
-    <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
-      <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
-      <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
-      <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
-      <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
-    </div>
-    <span class="updated"><span class="live-dot" id="live-dot"></span><span id="updated-stamp">Connecting…</span></span>
-  </div>
-</div>
+  <!-- RIGHT — Spectrum Killian endorsement (FIXED) -->
+  <img class="cpx-sk" src="logos/spectrum-killian-stacked-color.png" alt="Spectrum Killian" />
+</header>
 
 <div id="err" class="err-banner"></div>
 
@@ -2134,7 +2170,7 @@
     // Update the brand subtitle to reflect the BU
     const brand = document.getElementById('brand-sub-text');
     if (brand) brand.textContent = BU_LABEL;
-    document.title = 'Station Health — ' + BUSINESS_UNIT;
+    document.title = 'ClearPath OS · DPM Module — ' + BUSINESS_UNIT;
     renderStationPicker();
   }
 
