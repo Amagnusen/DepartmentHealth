@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300..800&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
 <style>
   :root {
@@ -28,8 +28,10 @@
     /* App background / line tokens snapped to exact ClearPath OS light values */
     --bg: #EEF3F8;                /* app background (design system) */
     --card: #FFFFFF;
-    --ink: #052030;
-    --muted: #6B7785;             /* soft slate body text */
+    --ink: #0e2433;               /* text token (design system) */
+    --text-2: #41566a;            /* secondary text (design system) */
+    --text-3: #7e8ea0;            /* muted text (design system) */
+    --muted: #7e8ea0;             /* muted = text-3 (design system) */
     --slate-light: #DDE2E8;
     --hairline: #DDE6EE;          /* line token (design system) */
     /* ClearPath OS standardized header tokens (light theme) */
@@ -67,6 +69,9 @@
     flex-shrink: 0;
     position: relative;
     font-size: 15px;
+    /* flex column so the board auto-fills the space left by the header stack,
+       even when the subheader grows (e.g. station chips wrapping to 2 rows). */
+    display: flex; flex-direction: column;
   }
 
   /* ============================================================
@@ -75,7 +80,8 @@
      FIXED across every module app; only the module title and slot change.
      ============================================================ */
   .cpx-header {
-    display: flex; align-items: center; gap: 14px;
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
     margin-bottom: 8px;
     padding: 10px 16px;                 /* 10 top/bottom · 16 left/right */
     background: var(--cpx-bg);
@@ -95,13 +101,49 @@
   .cpx-divider { align-self: flex-end; width: 1px; height: 30px; margin-bottom: 1px; background: var(--cpx-divider); }
   .cpx-module {                                                    /* module name */
     position: relative; bottom: 4px;          /* baseline-aligns with ClearPath wordmark */
-    font-size: 21px; font-weight: 800; line-height: 1; letter-spacing: -.3px;
+    font-size: 27px; font-weight: 800; line-height: 1; letter-spacing: -.3px;
     color: var(--cpx-module); white-space: nowrap;
   }
-  /* MIDDLE — designer's free area (tools, station picker, BU tabs, status) */
-  .cpx-slot { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 18px; }
+  /* MIDDLE — module title, pinned to true page center */
+  .cpx-slot {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cpx-slot .cpx-module { bottom: 0; text-align: center; }
+  /* Tier label — centered near the bottom edge of the upper bar */
+  .cpx-tier {
+    position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%);
+    font-size: 18px; font-weight: 550; line-height: 1;
+    letter-spacing: .04em; color: var(--muted); text-align: center;
+  }
   /* RIGHT — Spectrum Killian endorsement (FIXED) */
   .cpx-sk { height: 76px; width: auto; display: block; flex-shrink: 0; }   /* SK logo = 76px tall */
+
+  /* ---- SUBHEADER: station picker (left) · BU tabs (center) · tools (right) ---- */
+  .cpx-subheader {
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    margin-bottom: 8px;
+    padding: 8px 16px;
+    background: var(--cpx-bg);
+    border: 1px solid var(--cpx-border);
+    border-radius: 12px;
+    box-shadow: var(--soft-shadow);
+  }
+  .cpx-sub-left  { flex: 0 0 auto; display: flex; align-items: center; }
+  .cpx-sub-left .top-title-wrap { flex: 0 0 auto; justify-content: flex-start; }
+  /* Middle zone (BU tabs) pinned to true page center */
+  .cpx-sub-mid   {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cpx-sub-right { flex: 0 0 auto; display: flex; align-items: center; gap: 16px; }
+  /* live status pinned to the subheader's bottom-right corner */
+  .cpx-subheader > .updated {
+    position: absolute; right: 16px; bottom: 5px;
+    line-height: 1;
+  }
+
   @media (max-width: 760px) {
     .cpx-module { font-size: 17px; }
     .cpx-sk { height: 58px; }
@@ -159,13 +201,13 @@
   }
   .top-title:hover { filter: brightness(1.15); }
   .top-title h1 {
-    margin: 0; font-weight: 800; font-size: 26px;
+    margin: 0; font-weight: 800; font-size: 18px;
     letter-spacing: 0.08em; text-transform: uppercase; line-height: 1;
   }
   .top-title .sub {
     font-family: 'Montserrat', sans-serif; font-weight: 400;
-    font-size: 13px; color: var(--alliance-blue); letter-spacing: 0.04em;
-    margin-top: 4px; line-height: 1; text-align: center;
+    font-size: 11px; color: var(--alliance-blue); letter-spacing: 0.04em;
+    margin-top: 3px; line-height: 1; text-align: center;
   }
   /* Keep the title + sub-line block centered so the date/count line never
      drifts left as the station name or counting method changes. */
@@ -252,8 +294,8 @@
   table.compare tbody td.hour-cell {
     background: #F4F7FA; font-size: 20px;
   }
-  table.compare tbody td.over { color: #16794d; }
-  table.compare tbody td.under { color: #b03b1b; }
+  table.compare tbody td.over { color: #1E9E6A; }
+  table.compare tbody td.under { color: #D6453B; }
   table.compare tbody tr.future td { opacity: 0.55; }
   table.compare tbody tr.current td { background: #CFE4F0; }
   table.compare tbody tr.current td.hour-cell { background: #92C9E6; color: var(--spectrum-blue); }
@@ -262,35 +304,43 @@
     font-weight: 600; font-size: 13px; color: var(--muted); line-height: 1.2;
     margin-top: 2px;
   }
-  table.compare tbody td.over .pct-mini { color: #16794d; }
-  table.compare tbody td.under .pct-mini { color: #b03b1b; }
+  table.compare tbody td.over .pct-mini { color: #1E9E6A; }
+  table.compare tbody td.under .pct-mini { color: #D6453B; }
 
   /* Compare mode: right column stays visible with aggregated data.
      Title area shows chips per selected station instead of single name. */
+  /* Max 3 chips per row — the 4th wraps to the next line. */
   .station-chips {
-    display: flex; gap: 6px; flex-wrap: wrap;
+    display: grid; grid-template-columns: repeat(3, auto); gap: 6px;
     align-items: center; justify-content: center;
   }
+  /* 2–3 selected → compact chip (smaller than the single-station title). */
   .station-chip {
     display: inline-block;
-    padding: 8px 16px;
+    padding: 4px 10px;
     background: transparent;
     border: 1px solid var(--spectrum-blue);
     border-radius: 5px;
     color: var(--spectrum-blue);
     font-family: 'Montserrat', sans-serif;
-    font-weight: 700; font-size: 22px;
+    font-weight: 700; font-size: 14px;
     letter-spacing: 0.04em; text-transform: uppercase;
     line-height: 1.1;
+    white-space: nowrap;
+  }
+  /* More than 3 selected → chips wrap to multiple rows and shrink down again. */
+  .station-chips.many { gap: 4px; }
+  .station-chips.many .station-chip {
+    padding: 3px 8px; font-size: 12px;
   }
   .top-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
   .updated { font-size: 11px; color: var(--muted); font-family: 'Montserrat', sans-serif; }
   .live-dot {
-    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-    background: #16794d; margin-right: 6px; box-shadow: 0 0 0 0 rgba(22,121,77,0.6);
+    display: none; width: 8px; height: 8px; border-radius: 50%;
+    background: #1E9E6A; margin-right: 6px; box-shadow: 0 0 0 0 rgba(22,121,77,0.6);
     animation: pulse 2s infinite;
   }
-  .live-dot.stale { background: #b03b1b; animation: none; }
+  .live-dot.stale { background: #D6453B; animation: none; }
   @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(22,121,77,0.6); }
     70% { box-shadow: 0 0 0 8px rgba(22,121,77,0); }
@@ -301,7 +351,7 @@
 
   .err-banner {
     display: none; margin-bottom: 14px; padding: 10px 14px;
-    background: #fdeaea; border: 1px solid #e0a4a4; color: #8c1f1f;
+    background: #fbeceb; border: 1px solid #e0a4a4; color: #8c1f1f;
     border-radius: 4px; font-family: 'Montserrat', sans-serif; font-size: 13px;
   }
   .err-banner.open { display: block; }
@@ -330,7 +380,7 @@
   .pill .label { font-weight: 700; font-size: 16px; color: var(--spectrum-blue); letter-spacing: 0.02em; text-transform: uppercase; }
   .pill .count { font-weight: 800; font-size: 32px; color: var(--spectrum-blue); min-width: 32px; text-align: right; line-height: 1; }
 
-  .board { display: grid; grid-template-columns: minmax(0,1fr) 460px; gap: 14px; align-items: stretch; height: calc(100% - 112px); min-height: 0; }
+  .board { display: grid; grid-template-columns: minmax(0,1fr) 460px; gap: 14px; align-items: stretch; flex: 1 1 auto; min-height: 0; }
   .right-stack { display: flex; flex-direction: column; gap: 10px; overflow: hidden; min-height: 0; }
   .panel { background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); box-shadow: var(--soft-shadow); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
   .dual-pills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -350,10 +400,10 @@
   table.hourly thead th.target-col { width: 13%; }
   table.hourly thead th.pct-col    { width: auto; }
   table.hourly thead th.log-col    { width: 60px; }
-  table.hourly tbody td { padding: 4px 6px; text-align: center; font-size: 18px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
+  table.hourly tbody td { padding: 4px 6px; text-align: center; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
   table.hourly tbody td:last-child { border-right: none; }
   table.hourly tbody tr:last-child td { border-bottom: none; }
-  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding: 4px 6px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
+  table.hourly tbody td.hour-cell { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 22px; color: var(--spectrum-blue); background: #F4F7FA; text-align: center; padding: 4px 6px; letter-spacing: 0.02em; cursor: pointer; user-select: none; transition: background 0.15s; }
   table.hourly tbody td.hour-cell:hover { background: var(--alliance-blue); }
   table.hourly tbody td.hour-cell .chev {
     display: none;
@@ -373,21 +423,21 @@
     background: #EFF2F6;
   }
   table.hourly tbody tr.qrow td.q-actual {
-    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
     font-size: 22px; color: var(--spectrum-blue);
   }
-  table.hourly tbody tr.qrow td.q-actual.over { color: #16794d; }
-  table.hourly tbody tr.qrow td.q-actual.under { color: #b03b1b; }
+  table.hourly tbody tr.qrow td.q-actual.over { color: #1E9E6A; }
+  table.hourly tbody tr.qrow td.q-actual.under { color: #D6453B; }
   table.hourly tbody tr.qrow td.q-target {
-    color: var(--muted); font-weight: 600; font-size: 18px;
+    color: var(--muted); font-weight: 700; font-size: 18px;
   }
   table.hourly tbody tr.qrow td.q-pct { padding: 7px 18px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar { height: 26px; }
   table.hourly tbody tr.qrow td.q-pct .pct-bar .pct-label { font-size: 14px; }
-  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 28px; color: var(--spectrum-blue); }
-  table.hourly tbody td.actual-cell.over { color: #16794d; }
-  table.hourly tbody td.actual-cell.under { color: #b03b1b; }
-  table.hourly tbody td.target-cell { color: var(--muted); font-weight: 600; font-size: 21px; }
+  table.hourly tbody td.actual-cell { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 28px; color: var(--spectrum-blue); }
+  table.hourly tbody td.actual-cell.over { color: #1E9E6A; }
+  table.hourly tbody td.actual-cell.under { color: #D6453B; }
+  table.hourly tbody td.target-cell { color: var(--muted); font-weight: 700; font-size: 21px; }
   table.hourly tbody td.pct-cell { padding: 5px 12px; text-align: left; position: relative; }
 
   /* Miss-reason affordance — tiny square button in its own column */
@@ -435,7 +485,7 @@
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     font-family: 'Montserrat', sans-serif;
-    font-weight: 800; font-size: 15px;
+    font-weight: 700; font-size: 15px;
     color: var(--spectrum-blue);
     letter-spacing: 0.04em;
     text-shadow: 0 0 4px rgba(255,255,255,0.85);
@@ -443,15 +493,15 @@
   .pct-bar.future .pct-label { color: var(--muted); }
 
   .cumulative-card { background: var(--card); border: 1px solid var(--hairline); border-radius: var(--radius); box-shadow: var(--soft-shadow); overflow: hidden; }
-  .cumulative-card .head { background: var(--alliance-blue); color: var(--spectrum-blue); text-align: center; padding: 12px 10px; font-weight: 800; font-size: 22px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; }
+  .cumulative-card .head { background: var(--card); color: var(--spectrum-blue); text-align: center; padding: 12px 10px; font-weight: 700; font-size: 20px; letter-spacing: 0.08em; text-transform: uppercase; position: relative; border-bottom: 2px solid var(--lab-gold); }
   .cumulative-card .head::after { display: none; }
   .cumulative-card .body { display: grid; grid-template-columns: 1fr 1fr 1fr; }
   .cumulative-block { padding: 10px 6px; text-align: center; border-right: 1px solid var(--hairline); }
   .cumulative-block:last-child { border-right: none; }
   .cumulative-block .label { font-weight: 700; font-size: 14px; color: var(--spectrum-blue); letter-spacing: 0.05em; text-transform: uppercase; }
-  .cumulative-block .number { font-weight: 800; font-size: 46px; color: var(--num-soft); line-height: 1.05; margin-top: 4px; }
+  .cumulative-block .number { font-weight: 700; font-size: 46px; color: var(--num-soft); line-height: 1.05; margin-top: 4px; }
   .cumulative-block.target .number { color: var(--lab-gold); }
-  .cumulative-block .delta { font-family: 'Montserrat', sans-serif; font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
+  .cumulative-block .delta { font-family: 'Montserrat', sans-serif; font-weight: 500; font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.2; }
   .cumulative-block.pct {
     background: var(--bg);
   }
@@ -459,9 +509,9 @@
     font-size: 46px;
     transition: color 0.2s;
   }
-  .cumulative-block.pct .number.over    { color: #16794d; }
+  .cumulative-block.pct .number.over    { color: #1E9E6A; }
   .cumulative-block.pct .number.partial { color: var(--lab-gold); }
-  .cumulative-block.pct .number.under   { color: #b03b1b; }
+  .cumulative-block.pct .number.under   { color: #D6453B; }
   .cumulative-block.pct .number.future  { color: var(--solutions-silver); }
 
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(5,32,48,0.5); align-items: center; justify-content: center; z-index: 100; }
@@ -529,17 +579,17 @@
     border-radius: var(--radius); box-shadow: var(--soft-shadow); overflow: hidden;
   }
   .section-card .head {
-    background: var(--alliance-blue); color: var(--spectrum-blue);
+    background: var(--card); color: var(--spectrum-blue);
     padding: 12px 16px; font-family: 'Montserrat', sans-serif;
-    font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
-    font-size: 19px; position: relative;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+    font-size: 20px; position: relative;
     display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid var(--lab-gold);
   }
   .section-card .head::after { display: none; }
   .section-card .head .badge {
-    font-size: 20px; background: transparent; color: #fff;
+    font-size: 20px; background: transparent; color: var(--killian-blue);
     padding: 0; border-radius: 0; font-weight: 800;
-    text-shadow: 0 0 6px rgba(111,168,200,0.45);
   }
 
   /* Tech leaderboard */
@@ -553,7 +603,7 @@
   }
   .tech-row:last-child { border-bottom: none; }
   .tech-rank {
-    font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 22px;
+    font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 22px;
     color: var(--lab-gold); text-align: center;
   }
   .tech-row.r-1 .tech-rank { color: var(--lab-gold); }
@@ -776,7 +826,7 @@
     font-family: 'Montserrat', sans-serif;
     font-weight: 800; font-size: 18px; color: var(--spectrum-blue);
   }
-  .miss-stat .v.miss { color: #b03b1b; }
+  .miss-stat .v.miss { color: #D6453B; }
   .miss-stat .l {
     font-size: 11px; color: var(--muted);
     letter-spacing: 0.06em; text-transform: uppercase;
@@ -813,7 +863,7 @@
     background: transparent; border: none; cursor: pointer;
     color: var(--muted); font-size: 16px; padding: 0 4px;
   }
-  .miss-existing .row button.del:hover { color: #b03b1b; }
+  .miss-existing .row button.del:hover { color: #D6453B; }
 
   .miss-form { padding: 14px 18px; background: var(--bg); }
   .miss-form .field { margin-bottom: 10px; }
@@ -841,7 +891,7 @@
   .miss-form textarea { min-height: 60px; resize: vertical; }
   .miss-form select optgroup { font-family: 'Montserrat', sans-serif; font-weight: 700; color: var(--spectrum-blue); }
   .hot-case {
-    font-family: 'Montserrat', sans-serif; font-weight: 800;
+    font-family: 'Montserrat', sans-serif; font-weight: 700;
     color: var(--spectrum-blue); font-size: 19px;
   }
   .hot-tag {
@@ -861,7 +911,7 @@
     font-family: 'Montserrat', sans-serif; font-size: 15px;
     color: var(--muted); white-space: nowrap; font-weight: 600;
   }
-  .hot-due.overdue { color: #8C1F1F; font-weight: 800; }
+  .hot-due.overdue { color: #8C1F1F; font-weight: 600; }
   .hot-note {
     grid-column: 1 / -1; padding-top: 6px;
     font-family: 'Lora', Georgia, serif; font-size: 14px;
@@ -871,12 +921,7 @@
   /* ---- Navy header bars (Design Approval style) ----
      Card / table / modal headers use solid Spectrum navy with white text. */
   .title-card,
-  .modal-head,
-  .cumulative-card .head,
-  .section-card .head,
-  table.hourly thead th,
-  table.compare thead .row-1 th,
-  .ooh-table thead th { background: var(--spectrum-blue); color: #fff; }
+  .modal-head { background: var(--spectrum-blue); color: #fff; }
   table.compare thead .row-1 th.hour-h,
   .bu-pop .item.active,
   .station-pop .item.active { background: var(--navy-mid); color: #fff; }
@@ -887,11 +932,12 @@
      Right: BU tabs (top) + updated time (bottom). */
   .bar-tools { display: inline-flex; align-items: center; gap: 12px; flex-shrink: 0; }
   .tool-sep { color: var(--slate-light); font-weight: 400; }
+  /* Right group: BU tabs + live status sit on one vertically-centered row */
   .bar-right {
     flex-shrink: 0;
-    display: flex; flex-direction: column;
-    justify-content: center; align-items: flex-end;
-    gap: 6px;
+    display: flex; flex-direction: row;
+    justify-content: flex-end; align-items: center;
+    gap: 16px;
   }
 
   /* Data Entry picker — blends into the light header, just text + a
@@ -915,16 +961,16 @@
   .bu-tab {
     position: relative;
     padding: 2px 14px; cursor: pointer; user-select: none;
-    font-family: 'Montserrat', sans-serif; font-weight: 700;
-    font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--solutions-silver);
+    font-family: 'Montserrat', sans-serif; font-weight: 600;
+    font-size: 24px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: #8B929E;                       /* medium gray for all tabs */
     border-right: 1px solid var(--slate-light);
     transition: color 0.15s;
   }
   .bu-tab:first-child { padding-left: 0; }
   .bu-tab:last-child { border-right: none; padding-right: 0; }
-  .bu-tab:hover { color: var(--killian-blue); }
-  .bu-tab.active { color: var(--killian-blue); }
+  .bu-tab:hover { color: var(--spectrum-blue); }
+  .bu-tab.active { color: var(--spectrum-blue); }   /* selected = navy */
   /* Custom tooltip centered below the hovered tab */
   .bu-tab[data-tip]::after {
     content: attr(data-tip);
@@ -949,29 +995,32 @@
 <body>
 <div id="scale-wrap">
 
+<!-- UPPER HEADER — ClearPath lockup (left) · module title (center) · Spectrum Killian (right) -->
 <header class="cpx-header">
 
-  <!-- LEFT — ClearPath lockup + module title (FIXED) -->
+  <!-- LEFT — ClearPath lockup (FIXED) -->
   <div class="cpx-brandgroup">
     <div class="cpx-logostack">
       <img class="cpx-clearpath" src="logos/clearpath-black.png" alt="ClearPath" />
       <span class="cpx-os">Operating System</span>
     </div>
-    <span class="cpx-divider"></span>
-    <span class="cpx-module">DPM Module</span>
   </div>
 
-  <!-- MIDDLE — designer slot: tools · station picker · BU tabs + status -->
+  <!-- MIDDLE — module title, centered -->
   <div class="cpx-slot">
-    <div class="bar-tools">
-      <button class="metrics-btn" id="metrics-btn" title="Open analytics">Metrics</button>
-      <span class="tool-sep">|</span>
-      <span class="ooh-tag empty" id="ooh-tag" title="Click for breakdown">
-        Out of Hours
-        <span class="num" id="ooh-num">0</span>
-      </span>
-    </div>
+    <span class="cpx-module">Daily Performance Management Module</span>
+  </div>
+  <!-- Tier label, centered near the bottom of the bar -->
+  <span class="cpx-tier">Tier 1</span>
 
+  <!-- RIGHT — Spectrum Killian endorsement (FIXED) -->
+  <img class="cpx-sk" src="logos/spectrum-killian-stacked-color.png" alt="Spectrum Killian" />
+</header>
+
+<!-- SUBHEADER — station picker (left) · BU tabs (center) · tools (right) -->
+<div class="cpx-subheader">
+
+  <div class="cpx-sub-left">
     <div class="top-title-wrap">
       <div class="top-title" id="top-title">
         <div>
@@ -982,21 +1031,31 @@
       </div>
       <div class="station-pop" id="station-pop"></div>
     </div>
+  </div>
 
-    <div class="bar-right">
-      <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
-        <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
-        <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
-        <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
-        <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
-      </div>
-      <span class="updated"><span class="live-dot" id="live-dot"></span><span id="updated-stamp">Connecting…</span></span>
+  <div class="cpx-sub-mid">
+    <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
+      <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
+      <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
+      <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
+      <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
     </div>
   </div>
 
-  <!-- RIGHT — Spectrum Killian endorsement (FIXED) -->
-  <img class="cpx-sk" src="logos/spectrum-killian-stacked-color.png" alt="Spectrum Killian" />
-</header>
+  <div class="cpx-sub-right">
+    <div class="bar-tools">
+      <button class="metrics-btn" id="metrics-btn" title="Open analytics">Metrics</button>
+      <span class="tool-sep">|</span>
+      <span class="ooh-tag empty" id="ooh-tag" title="Click for breakdown">
+        Out of Hours
+        <span class="num" id="ooh-num">0</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- live status pinned to the bottom-right corner of the subheader -->
+  <span class="updated"><span class="live-dot" id="live-dot"></span><span id="updated-stamp">Connecting…</span></span>
+</div>
 
 <div id="err" class="err-banner"></div>
 
@@ -1361,7 +1420,7 @@
     const title = document.getElementById('station-title');
     if (isMulti()) {
       const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-      title.innerHTML = '<span class="station-chips">' +
+      title.innerHTML = '<span class="station-chips' + (state.selected.length > 3 ? ' many' : '') + '">' +
         state.selected.map(s => `<span class="station-chip">${esc(s)}</span>`).join('') +
         '</span>';
       document.getElementById('count-method').textContent = 'aggregate · ' + state.selected.length + ' stations';
@@ -1487,7 +1546,7 @@
     const deltaEl = document.getElementById('cum-actual-delta');
     if (cumTarget > 0) {
       const sign = delta >= 0 ? '+' : '';
-      deltaEl.innerHTML = `<span style="color:${delta>=0?'#16794d':'#b03b1b'};font-weight:600">${sign}${(Math.round(delta*10)/10)}</span> vs pace`;
+      deltaEl.innerHTML = `<span style="color:${delta>=0?'#1E9E6A':'#D6453B'};font-weight:500">${sign}${(Math.round(delta*10)/10)}</span> vs pace`;
     } else {
       deltaEl.innerHTML = '&nbsp;';
     }
@@ -1939,8 +1998,8 @@
     gold: '#B3A369',
     alliance: '#C3E8FA',
     silver: '#B0B7C3',
-    red: '#b03b1b',
-    green: '#16794d',
+    red: '#D6453B',
+    green: '#1E9E6A',
   };
 
   function destroyMetricsCharts() {
