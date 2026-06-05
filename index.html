@@ -104,17 +104,11 @@
     font-size: 27px; font-weight: 800; line-height: 1; letter-spacing: -.3px;
     color: var(--cpx-module); white-space: nowrap;
   }
-  /* MIDDLE — module title, pinned to true page center */
-  .cpx-slot {
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .cpx-slot .cpx-module { bottom: 0; text-align: center; }
-  /* Tier label — centered near the bottom edge of the upper bar */
+  /* MIDDLE — designer's free area (nav, buttons, status…) */
+  .cpx-slot { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; }
+  /* Tier label — inline suffix after the module title */
   .cpx-tier {
-    position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%);
-    font-size: 18px; font-weight: 550; line-height: 1;
-    letter-spacing: .04em; color: var(--muted); text-align: center;
+    font-weight: 550; letter-spacing: .04em; color: var(--muted);
   }
   /* RIGHT — Spectrum Killian endorsement (FIXED) */
   .cpx-sk { height: 76px; width: auto; display: block; flex-shrink: 0; }   /* SK logo = 76px tall */
@@ -998,20 +992,18 @@
 <!-- UPPER HEADER — ClearPath lockup (left) · module title (center) · Spectrum Killian (right) -->
 <header class="cpx-header">
 
-  <!-- LEFT — ClearPath lockup (FIXED) -->
+  <!-- LEFT — ClearPath lockup + module title (FIXED) -->
   <div class="cpx-brandgroup">
     <div class="cpx-logostack">
       <img class="cpx-clearpath" src="logos/clearpath-black.png" alt="ClearPath" />
       <span class="cpx-os">Operating System</span>
     </div>
+    <span class="cpx-divider"></span>
+    <span class="cpx-module">Daily Performance Management Module<span class="cpx-tier"> - Tier 1</span></span>
   </div>
 
-  <!-- MIDDLE — module title, centered -->
-  <div class="cpx-slot">
-    <span class="cpx-module">Daily Performance Management Module</span>
-  </div>
-  <!-- Tier label, centered near the bottom of the bar -->
-  <span class="cpx-tier">Tier 1</span>
+  <!-- MIDDLE — designer's free area -->
+  <div class="cpx-slot"></div>
 
   <!-- RIGHT — Spectrum Killian endorsement (FIXED) -->
   <img class="cpx-sk" src="logos/spectrum-killian-stacked-color.png" alt="Spectrum Killian" />
