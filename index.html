@@ -382,6 +382,9 @@
 
   /* (table base styles consolidated above) */
   table.hourly { table-layout: fixed; height: 100%; }
+  /* Full 24h day renders, but the grid scrolls within its panel; off-hours scroll into view. */
+  .board > .panel { overflow-y: auto; }
+  table.hourly thead th { position: sticky; top: 0; z-index: 3; }
   table.hourly thead th {
     background: var(--alliance-blue); color: var(--spectrum-blue); text-align: center; padding: 8px 8px;
     font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 18px;
@@ -392,6 +395,10 @@
   table.hourly thead th.hour-col   { width: 100px; }
   table.hourly thead th.actual-col { width: 13%; }
   table.hourly thead th.target-col { width: 13%; }
+  table.hourly thead th.target-col .unit-sub {
+    display: block; font-size: 11px; font-weight: 600; text-transform: none;
+    letter-spacing: 0.02em; opacity: 0.75; margin-top: 2px;
+  }
   table.hourly thead th.pct-col    { width: auto; }
   table.hourly thead th.log-col    { width: 60px; }
   table.hourly tbody td { padding: 4px 6px; text-align: center; font-weight: 700; font-size: 18px; border-bottom: 1px solid var(--hairline); border-right: 1px solid var(--hairline); background: #fff; }
@@ -1028,7 +1035,7 @@
   <div class="cpx-sub-mid">
     <div class="bu-tabs" id="bu-switcher" title="Switch business unit">
       <span class="bu-tab" data-bu="AOX" data-tip="Full Arch">FA</span>
-      <span class="bu-tab" data-bu="CB" data-tip="Crown and Bridges">C&amp;B</span>
+      <span class="bu-tab" data-bu="CB" data-tip="Restorative Frontend (Crown &amp; Bridge)">Restorative</span>
       <span class="bu-tab" data-bu="REM_AD" data-tip="Removables - Analog">REM-A</span>
       <span class="bu-tab" data-bu="REM_PD" data-tip="Removable - Printed">REM-P</span>
     </div>
@@ -1058,7 +1065,7 @@
         <tr>
           <th class="hour-col">Hour</th>
           <th class="actual-col">Actual</th>
-          <th class="target-col">Target</th>
+          <th class="target-col">Target<span class="unit-sub" id="target-unit">units/hr</span></th>
           <th class="pct-col">% Complete</th>
           <th class="log-col" title="Log miss reason">Miss</th>
         </tr>
@@ -1237,21 +1244,27 @@
   const BUSINESS_UNIT = (new URLSearchParams(location.search).get('bu') || 'AOX').toUpperCase();
   const BU_LABEL = {
     'AOX':    'AOX · Day-By-The-Hour',
-    'CB':     'Crown & Bridge · Day-By-The-Hour',
+    'CB':     'Restorative Frontend · Day-By-The-Hour',
     'REM_AD': 'Removable Analog · Day-By-The-Hour',
     'REM_PD': 'Removable Printed · Day-By-The-Hour',
   }[BUSINESS_UNIT] || (BUSINESS_UNIT + ' · Day-By-The-Hour');
   // Short labels for the switcher pill
   const BU_SHORT = {
     'AOX':    'FA',
-    'CB':     'C&B',
+    'CB':     'Restorative',
     'REM_AD': 'REM-A',
     'REM_PD': 'REM-P',
   };
   const TZ = 'America/Los_Angeles';   // Pacific (PST/PDT)
-  const SHIFT_START = 6;
-  const SHIFT_END = 20;   // 6am – 8pm window (14 hourly rows)
+  const SHIFT_START = 0;
+  const SHIFT_END = 24;   // full local day: 12am – 11:59pm (24 hourly rows, midnight-to-midnight)
   const REFRESH_MS = 60000;
+
+  // Target unit basis per station count_method (board target shows this under "Target").
+  const unitWord  = (method) => method === 'distinct_case' ? 'cases'
+                              : method === 'distinct_pan'  ? 'pans'
+                              : 'units';            // 'sum' (and any default)
+  const unitPerHr = (method) => unitWord(method) + '/hr';
 
   // ---------- Helpers ----------
   const fmtHour = (h) => {
@@ -1408,7 +1421,7 @@
     document.getElementById('today-label').textContent = fmtLongDate();
     document.getElementById('updated-stamp').textContent = 'Updated ' + fmtTimestamp();
     const bu = document.getElementById('bu-label');
-    if (bu) bu.textContent = BUSINESS_UNIT;
+    if (bu) bu.textContent = (BUSINESS_UNIT === 'CB') ? 'Restorative Frontend' : BUSINESS_UNIT;
     const title = document.getElementById('station-title');
     if (isMulti()) {
       const esc = s => String(s).replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
@@ -1431,6 +1444,9 @@
     // Restore single-station table if it was replaced
     if (!document.getElementById('hour-body')) restoreSingleTable(panel);
     const tbody = document.getElementById('hour-body');
+    // Label the Target column with this station's basis (cases/hr, pans/hr, or units/hr).
+    const unitEl = document.getElementById('target-unit');
+    if (unitEl) unitEl.textContent = unitPerHr(state.countMethod);
     const nowHour = getNowLocalHour();
     const nowMin  = getNowLocalMinute();
     const hourlyTarget = state.target / (SHIFT_END - SHIFT_START);
@@ -1512,7 +1528,21 @@
         }
       }
     }
+    const prevScroll = panel.scrollTop;
     tbody.innerHTML = rows.join('');
+    // Default the visible window to the work hours (6am at top); preserve the user's
+    // scroll position across the 60s refresh and quarter-hour expansions.
+    requestAnimationFrame(() => {
+      const head = panel.querySelector('table.hourly thead');
+      const headH = head ? head.offsetHeight : 0;
+      if (!state._hourScrollInit) {
+        const six = tbody.querySelector('tr.hour-row[data-hour="6"]');
+        panel.scrollTop = six ? Math.max(0, six.offsetTop - headH) : 0;
+        state._hourScrollInit = true;
+      } else {
+        panel.scrollTop = prevScroll;
+      }
+    });
 
     // Wire up click handlers on hour cells
     tbody.querySelectorAll('td.hour-cell').forEach(cell => {
@@ -1569,7 +1599,7 @@
           <tr>
             <th class="hour-col">Hour</th>
             <th class="actual-col">Actual</th>
-            <th class="target-col">Target</th>
+            <th class="target-col">Target<span class="unit-sub" id="target-unit">units/hr</span></th>
             <th class="pct-col">% Complete</th>
             <th class="log-col" title="Log miss reason">Miss</th>
           </tr>
@@ -1599,7 +1629,8 @@
     stations.forEach(stn => {
       const tgt = hourlyTargetByStation[stn];
       const tgtDisplay = tgt % 1 === 0 ? tgt : tgt.toFixed(1);
-      html += `<th>tgt ${tgtDisplay}/hr</th>`;
+      const method = (state.compareData[stn] || {}).count_method;
+      html += `<th>tgt ${tgtDisplay} ${unitPerHr(method)}</th>`;
     });
     html += '</tr></thead><tbody>';
 
