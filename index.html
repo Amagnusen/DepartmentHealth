@@ -1339,6 +1339,18 @@
   // ---------- Station picker (multi-select with checkboxes) ----------
   function isMulti() { return (state.selected || []).length > 1; }
 
+  // Write the current selection into the URL (?stations=A,B) without reloading,
+  // so a full browser refresh restores the same stations. BU stays in ?bu=.
+  function persistSelection() {
+    const params = new URLSearchParams(location.search);
+    if (state.selected && state.selected.length) {
+      params.set('stations', state.selected.join(','));
+    } else {
+      params.delete('stations');
+    }
+    history.replaceState(null, '', location.pathname + '?' + params.toString());
+  }
+
   function renderStationPicker() {
     const pop = document.getElementById('station-pop');
     pop.innerHTML = '';
@@ -1361,6 +1373,7 @@
         state.stations.forEach((st, i) => order[st.station] = i);
         state.selected.sort((a, b) => (order[a] ?? 99) - (order[b] ?? 99));
         state.station = state.selected[0];
+        persistSelection();
         document.body.classList.toggle('compare-mode', isMulti());
         renderStationPicker();
         renderHeader();
@@ -1378,6 +1391,7 @@
       const first = (state.stations[0] && state.stations[0].station) || null;
       state.selected = first ? [first] : [];
       state.station = first;
+      persistSelection();
       document.body.classList.remove('compare-mode');
       pop.classList.remove('open');
       renderStationPicker();
@@ -1411,6 +1425,7 @@
         if (nextBu === BUSINESS_UNIT) return;
         const params = new URLSearchParams(location.search);
         params.set('bu', nextBu);
+        params.delete('stations');             // start fresh; the new BU has its own stations
         location.search = params.toString();   // triggers reload with new ?bu=
       });
     });
@@ -2240,14 +2255,25 @@
   async function loadStations() {
     const list = await rpc('station_health_list', { p_business_unit: BUSINESS_UNIT });
     state.stations = (list || []).map(r => ({ station: r.station, dept: r.target_dept_name, order: r.display_order }));
-    // Always start on the first station for the BU on every page load (no persistence).
-    // For AOX that's Case Entry, for CB that's Data Entry, etc.
+    // Restore the station selection from the URL (?stations=A,B) so it survives a full reload.
+    // Only names that still exist for this BU are kept; falls back to the first station.
+    const valid = new Set(state.stations.map(s => s.station));
+    const fromUrl = (new URLSearchParams(location.search).get('stations') || '')
+      .split(',').map(s => s.trim()).filter(s => valid.has(s));
+    if (fromUrl.length) {
+      const order = {};
+      state.stations.forEach((st, i) => order[st.station] = i);
+      fromUrl.sort((a, b) => (order[a] ?? 99) - (order[b] ?? 99));
+      state.selected = fromUrl;
+      state.station = fromUrl[0];
+    }
     if (!state.station) {
       state.station = (state.stations[0] && state.stations[0].station) || null;
     }
     if (!state.selected || state.selected.length === 0) {
       state.selected = state.station ? [state.station] : [];
     }
+    persistSelection();
     document.body.classList.toggle('compare-mode', isMulti());
     // Update the brand subtitle to reflect the BU
     const brand = document.getElementById('brand-sub-text');
