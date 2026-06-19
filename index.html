@@ -595,12 +595,15 @@
 
   /* Tech leaderboard */
   .section-card { display: flex; flex-direction: column; min-height: 0; flex: 1 1 0; overflow: hidden; }
-  .tech-list { padding: 2px 0; flex: 1 1 0; min-height: 0; overflow-y: auto; }
+  /* Operators card sizes to its content (at most ~4 rows) and never grows;
+     the list scrolls internally so every operator stays reachable. */
+  .section-card.ops-card { flex: 0 0 auto; }
+  .tech-list { padding: 2px 0; flex: 0 0 auto; min-height: 0; max-height: 256px; overflow-y: auto; }
   .tech-row {
-    display: grid; grid-template-columns: 34px 1fr auto;
-    align-items: center; padding: 6px 16px;
+    display: grid; grid-template-columns: 40px 1fr auto;
+    align-items: center; padding: 0 16px;
     border-bottom: 1px solid var(--hairline);
-    gap: 12px;
+    gap: 14px; height: 64px; box-sizing: border-box;
   }
   .tech-row:last-child { border-bottom: none; }
   .tech-rank {
@@ -610,9 +613,14 @@
   .tech-row.r-1 .tech-rank { color: var(--lab-gold); }
   .tech-row.r-2 .tech-rank { color: var(--solutions-silver); }
   .tech-row.r-3 .tech-rank { color: #B8743A; }
+  .tech-id { min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
   .tech-name {
-    font-family: 'Montserrat', sans-serif; font-size: 19px; color: var(--ink);
+    font-family: 'Montserrat', sans-serif; font-size: 20px; color: var(--ink);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tech-step {
+    font-family: 'Montserrat', sans-serif; font-size: 13.5px; font-weight: 500;
+    color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tech-count {
     font-family: 'Montserrat', sans-serif; font-weight: 400; font-size: 23px;
@@ -1087,7 +1095,7 @@
         <div class="cumulative-block target">
           <div class="label">Target</div>
           <div class="number" id="cum-target">—</div>
-          <div class="delta">Daily &middot; <span id="daily-target-display">—</span></div>
+          <div class="delta">&nbsp;</div>
         </div>
         <div class="cumulative-block pct">
           <div class="label">% Complete</div>
@@ -1111,9 +1119,9 @@
       <div class="wip-label">Work In Progress</div>
     </div>
 
-    <div class="section-card">
+    <div class="section-card ops-card">
       <div class="head">
-        <span>Today's Top Operators</span>
+        <span>Operators</span>
         <span class="badge" id="techs-badge">0</span>
       </div>
       <div class="tech-list" id="tech-list">
@@ -1576,33 +1584,44 @@
       });
     });
 
-    document.getElementById('cum-actual').textContent = cumActual;
-    document.getElementById('cum-target').textContent = Math.round(cumTarget * 10) / 10;
-    document.getElementById('daily-target-display').textContent = state.target;
-    const delta = cumActual - cumTarget;
+    paintCumulative(cumActual);
+  }
+
+  // Today's Count card. cumActual is the actual completed so far (this station, or
+  // the sum across all selected steps in compare mode). Target shows the full daily
+  // total (state.target, summed across steps in compare mode) and % Complete /
+  // remaining are measured against that daily total.
+  function paintCumulative(cumActual) {
+    const dailyTarget = state.target || 0;
+    document.getElementById('cum-actual').textContent = Math.round(cumActual * 10) / 10;
+    document.getElementById('cum-target').textContent = Math.round(dailyTarget * 10) / 10;
     const deltaEl = document.getElementById('cum-actual-delta');
-    if (cumTarget > 0) {
-      const sign = delta >= 0 ? '+' : '';
-      deltaEl.innerHTML = `<span style="color:${delta>=0?'#1E9E6A':'#D6453B'};font-weight:500">${sign}${(Math.round(delta*10)/10)}</span> vs pace`;
+    if (dailyTarget > 0) {
+      const remaining = Math.round((dailyTarget - cumActual) * 10) / 10;
+      if (remaining > 0) {
+        deltaEl.innerHTML = `<span style="color:#D6453B;font-weight:500">${remaining}</span> to go`;
+      } else {
+        deltaEl.innerHTML = `<span style="color:#1E9E6A;font-weight:500">+${-remaining}</span> over`;
+      }
     } else {
       deltaEl.innerHTML = '&nbsp;';
     }
 
-    // Cumulative % Complete
+    // % Complete of the daily total
     const pctEl = document.getElementById('cum-pct');
     const pctSub = document.getElementById('cum-pct-sub');
     pctEl.classList.remove('over', 'partial', 'under', 'future');
-    if (cumTarget > 0) {
-      const pct = (cumActual / cumTarget) * 100;
+    if (dailyTarget > 0) {
+      const pct = (cumActual / dailyTarget) * 100;
       pctEl.textContent = Math.round(pct) + '%';
       if (pct >= 100)      pctEl.classList.add('over');
       else if (pct >= 67)  pctEl.classList.add('partial');
       else                 pctEl.classList.add('under');
-      pctSub.textContent = 'of pace';
+      pctSub.textContent = 'of daily';
     } else {
       pctEl.textContent = '—';
       pctEl.classList.add('future');
-      pctSub.textContent = 'shift not started';
+      pctSub.textContent = 'no target set';
     }
   }
 
@@ -1666,6 +1685,14 @@
     }
     html += '</tbody></table>';
     panel.innerHTML = html;
+
+    // Today's Count = sum of all selected steps. state.hourly is already the
+    // aggregate (summed) hourly built in load(); state.target is the summed daily target.
+    let cumActual = 0;
+    for (let h = SHIFT_START; h < SHIFT_END; h++) {
+      cumActual += state.hourly[h] ?? 0;
+    }
+    paintCumulative(cumActual);
   }
 
   function renderSide() {
@@ -1694,9 +1721,13 @@
       list.innerHTML = '<div class="empty-state">No finishes logged yet today.</div>';
       return;
     }
+    const esc = s => (s || '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
     list.innerHTML = state.techs.map((t, i) => {
-      const safe = (t.tech_name || '').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]));
-      return `<div class="tech-row r-${i+1}"><div class="tech-rank">${i+1}</div><div class="tech-name">${safe}</div><div class="tech-count">${t.n}</div></div>`;
+      const safe = esc(t.tech_name);
+      const step = esc(t.top_step);
+      const stepLabel = step ? (t.top_step_n != null ? `${step} - ${t.top_step_n}` : step) : '';
+      const stepLine = stepLabel ? `<div class="tech-step" title="${stepLabel}">${stepLabel}</div>` : '';
+      return `<div class="tech-row r-${i+1}"><div class="tech-rank">${i+1}</div><div class="tech-id"><div class="tech-name">${safe}</div>${stepLine}</div><div class="tech-count">${t.n}</div></div>`;
     }).join('');
   }
 
@@ -2316,7 +2347,12 @@
             agg.ideas += (d.log.ideas       || []).length;
           }
           (d.techs || []).forEach(t => {
-            agg.techs[t.tech_name] = (agg.techs[t.tech_name] || 0) + (t.n || 0);
+            const cur = agg.techs[t.tech_name] || { n: 0, top_step: null, top_step_n: null, topN: -1 };
+            cur.n += (t.n || 0);
+            // Attribute the operator's top step to the station where they did the
+            // most work, since per-step counts can't be re-derived once aggregated.
+            if ((t.n || 0) > cur.topN) { cur.topN = t.n || 0; cur.top_step = t.top_step || null; cur.top_step_n = t.top_step_n != null ? t.top_step_n : null; }
+            agg.techs[t.tech_name] = cur;
           });
           (d.hot_list || []).forEach(h => agg.hotList.push(h));
           (d.miss_log || []).forEach(m => agg.missLog.push(m));
@@ -2326,8 +2362,8 @@
         state.wip    = agg.wip;
         state.log    = { near_misses: new Array(agg.near).fill({}), ideas: new Array(agg.ideas).fill({}) };
         state.techs  = Object.entries(agg.techs)
-          .map(([tech_name, n]) => ({ tech_name, n }))
-          .sort((a, b) => b.n - a.n).slice(0, 10);
+          .map(([tech_name, v]) => ({ tech_name, n: v.n, top_step: v.top_step, top_step_n: v.top_step_n }))
+          .sort((a, b) => b.n - a.n);
         // Keep the 20 soonest-due cases (closest Doctor Due Date first; cases
         // with no due date sort last) so the most urgent rush work is never
         // dropped by the cap. renderHotList() re-applies the same ordering.
