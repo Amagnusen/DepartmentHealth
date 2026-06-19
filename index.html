@@ -259,10 +259,13 @@
     table-layout: fixed; width: 100%; height: 100%;
     border-collapse: collapse; font-family: 'Montserrat', sans-serif;
   }
+  /* The whole header (both rows) sticks as one unit, so it keeps its
+     natural height — no fixed height, nothing cropped, no resize on scroll. */
+  table.compare thead { position: sticky; top: 0; z-index: 4; }
   table.compare thead .row-1 th.hour-h {
     width: 110px; background: #A9DBF4;
-    /* Top-left corner: stays pinned both vertically and horizontally. */
-    left: 0; z-index: 5;
+    /* Top-left corner: also pinned horizontally so the Hour label stays. */
+    position: sticky; left: 0; z-index: 5;
   }
   table.compare thead .row-1 th {
     background: var(--alliance-blue); color: var(--spectrum-blue);
@@ -270,9 +273,6 @@
     font-size: 18px; letter-spacing: 0.06em; text-transform: uppercase;
     padding: 8px 6px; text-align: center;
     border-right: 1px solid rgba(5,32,48,0.08);
-    /* Keep the step labels visible while the hours scroll underneath. */
-    position: sticky; top: 0; z-index: 4;
-    height: 39px; box-sizing: border-box;
   }
   table.compare thead .row-1 th:last-child { border-right: none; }
   table.compare thead .row-2 th {
@@ -281,8 +281,6 @@
     font-size: 13px; padding: 4px 6px; text-align: center;
     border-bottom: 1px solid var(--hairline);
     border-right: 1px solid var(--hairline);
-    /* Sits directly below row-1 (its fixed 39px height) and stays pinned too. */
-    position: sticky; top: 39px; z-index: 4;
   }
   table.compare thead .row-2 th:last-child { border-right: none; }
   table.compare tbody td {
